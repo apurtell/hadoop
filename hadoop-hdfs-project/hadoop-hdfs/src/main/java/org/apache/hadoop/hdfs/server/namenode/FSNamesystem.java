@@ -8469,7 +8469,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
     }
   }
 
-  void finalizeRollingUpgrade() throws IOException {
+  RollingUpgradeInfo finalizeRollingUpgrade() throws IOException {
     checkSuperuserPrivilege();
     checkOperation(OperationCategory.WRITE);
     writeLock();
@@ -8477,7 +8477,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
     try {
       checkOperation(OperationCategory.WRITE);
       if (!isRollingUpgrade()) {
-        return;
+        return null;
       }
       checkNameNodeSafeMode("Failed to finalize rolling upgrade");
 
@@ -8502,7 +8502,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
     if (auditLog.isInfoEnabled() && isExternalInvocation()) {
       logAuditEvent(true, "finalizeRollingUpgrade", null, null, null);
     }
-    return;
+    return returnInfo;
   }
 
   RollingUpgradeInfo finalizeRollingUpgradeInternal(long finalizeTime)
