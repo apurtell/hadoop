@@ -8,6 +8,9 @@ Release 2.7.2 - 2016-01-25
 
     HADOOP-12702. Add an HDFS metrics sink. (Daniel Templeton via kasha)
 
+    HADOOP-9477. Add posixGroups support for LDAP groups mapping service.
+    (Dapeng Sun via Yongjun Zhang)
+
   IMPROVEMENTS
 
     HADOOP-12232. Upgrade Tomcat dependency to 6.0.44. (cnauroth)
