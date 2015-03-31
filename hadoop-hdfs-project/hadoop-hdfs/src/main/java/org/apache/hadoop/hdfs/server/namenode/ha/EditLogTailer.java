@@ -304,6 +304,15 @@ public class EditLogTailer {
       }.call();
       lastRollTriggerTxId = lastLoadedTxnId;
     } catch (IOException ioe) {
+      if (ioe instanceof RemoteException) {
+        ioe = ((RemoteException)ioe).unwrapRemoteException();
+        if (ioe instanceof StandbyException) {
+          LOG.info("Skipping log roll. Remote node is not in Active state: " +
+              ioe.getMessage().split("\n")[0]);
+          return;
+        }
+      }
+
       LOG.warn("Unable to trigger a roll of the active NN", ioe);
     }
   }
