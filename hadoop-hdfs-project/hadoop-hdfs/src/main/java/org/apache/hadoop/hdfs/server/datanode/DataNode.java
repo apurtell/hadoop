@@ -2176,6 +2176,8 @@ public class DataNode extends ReconfigurableBase
                   + Arrays.asList(targets));
             }
           }
+        } else {
+          metrics.incrBlocksReplicated();
         }
       } catch (IOException ie) {
         LOG.warn(bpReg + ":Failed to transfer " + b + " to " +
