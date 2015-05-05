@@ -17,13 +17,13 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.cloudera.cdh</groupId>
-    <artifactId>cdh-root</artifactId>
-    <version>5.4.0</version>
+    <groupId>com.salesforce.hbase</groupId>
+    <artifactId>bigdata-parent-pom</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
   </parent>
   <groupId>org.apache.hadoop</groupId>
   <artifactId>hadoop-main</artifactId>
-  <version>2.6.0-cdh5.4.2</version>
+  <version>2.6.0-cdh5.4.2-sfdc-1.0-SNAPSHOT</version>
   <description>Apache Hadoop Main</description>
   <name>Apache Hadoop Main</name>
   <packaging>pom</packaging>
@@ -40,12 +40,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   </dependencyManagement>
 
   <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scpexe://people.apache.org/www/hadoop.apache.org/docs/r${project.version}</url>
-    </site>
+    <repository>
+      <id>nexus</id>
+      <name>Internal Releases</name>
+      <url>https://nexus.soma.salesforce.com/nexus/content/repositories/salesforce-hbase/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus</id>
+      <name>Internal Releases</name>
+      <url>https://nexus.soma.salesforce.com/nexus/content/repositories/thirdparty-snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 
+  <!--
   <repositories>
     <repository>
       <id>cdh.repo</id>
@@ -79,6 +86,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       </snapshots>
     </repository>
   </repositories>
+  -->
 
   <licenses>
     <license>
@@ -106,6 +114,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <javaVersion>1.7</javaVersion>
     <targetJavaVersion>1.7</targetJavaVersion>
+    <cdh.slf4j.version>1.7.5</cdh.slf4j.version>
+    <cdh.zookeeper.version>3.4.6</cdh.zookeeper.version>
+    <cdh.protobuf.version>2.5.0</cdh.protobuf.version>
+    <cdh.tomcat.version>6.0.37</cdh.tomcat.version>
+    <cdh.avro.version>1.7.5</cdh.avro.version>
   </properties>
 
   <modules>
