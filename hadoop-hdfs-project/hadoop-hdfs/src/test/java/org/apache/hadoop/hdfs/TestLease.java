@@ -30,6 +30,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.PrivilegedExceptionAction;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.apache.hadoop.io.EnumSetWritable;
 import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.token.SecretManager.InvalidToken;
+import org.apache.hadoop.test.GenericTestUtils;
 import org.apache.hadoop.util.Time;
 import org.junit.Assert;
 import org.junit.Test;
@@ -325,8 +327,20 @@ public class TestLease {
 
       Assert.assertTrue(!hasLease(cluster, a));
       Assert.assertTrue(!hasLease(cluster, b));
-      
+
+      Path fileA = new Path(dir, "fileA");
+      FSDataOutputStream fileA_out = fs.create(fileA);
+      fileA_out.writeBytes("something");
+      Assert.assertTrue("Failed to get the lease!", hasLease(cluster, fileA));
+
       fs.delete(dir, true);
+      try {
+        fileA_out.hflush();
+        Assert.fail("Should validate file existence!");
+      } catch (FileNotFoundException e) {
+        // expected
+        GenericTestUtils.assertExceptionContains("File does not exist", e);
+      }
     } finally {
       if (cluster != null) {cluster.shutdown();}
     }
