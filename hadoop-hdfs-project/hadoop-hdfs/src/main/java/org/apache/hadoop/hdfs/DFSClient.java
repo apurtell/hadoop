@@ -991,6 +991,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#getPreferredBlockSize(String)
    */
   public long getBlockSize(String f) throws IOException {
+    checkOpen();
     TraceScope scope = getPathTraceScope("getBlockSize", f);
     try {
       return namenode.getPreferredBlockSize(f);
@@ -1007,6 +1008,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#getServerDefaults()
    */
   public FsServerDefaults getServerDefaults() throws IOException {
+    checkOpen();
     long now = Time.monotonicNow();
     if ((serverDefaults == null) ||
         (now - serverDefaultsLastUpdate > SERVER_DEFAULTS_VALIDITY_PERIOD)) {
@@ -1198,6 +1200,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#reportBadBlocks(LocatedBlock[])
    */
   public void reportBadBlocks(LocatedBlock[] blocks) throws IOException {
+    checkOpen();
     namenode.reportBadBlocks(blocks);
   }
   
@@ -1275,6 +1278,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    */
   public BlockLocation[] getBlockLocations(String src, long start, 
         long length) throws IOException, UnresolvedLinkException {
+    checkOpen();
     TraceScope scope = getPathTraceScope("getBlockLocations", src);
     try {
       LocatedBlocks blocks = getLocatedBlocks(src, start, length);
@@ -1309,6 +1313,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
   public BlockStorageLocation[] getBlockStorageLocations(
       List<BlockLocation> blockLocations) throws IOException,
       UnsupportedOperationException, InvalidBlockTokenException {
+    checkOpen();
     if (!getConf().getHdfsBlocksMetadataEnabled) {
       throw new UnsupportedOperationException("Datanode-side support for " +
           "getVolumeBlockLocations() must also be enabled in the client " +
@@ -1771,6 +1776,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    */
   public void createSymlink(String target, String link, boolean createParent)
       throws IOException {
+    checkOpen();
     TraceScope scope = getPathTraceScope("createSymlink", target);
     try {
       FsPermission dirPerm = 
@@ -1898,6 +1904,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    */
   public boolean setReplication(String src, short replication)
       throws IOException {
+    checkOpen();
     TraceScope scope = getPathTraceScope("setReplication", src);
     try {
       return namenode.setReplication(src, replication);
@@ -1920,6 +1927,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    */
   public void setStoragePolicy(String src, String policyName)
       throws IOException {
+    checkOpen();
     TraceScope scope = getPathTraceScope("setStoragePolicy", src);
     try {
       namenode.setStoragePolicy(src, policyName);
@@ -1939,6 +1947,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @return All the existing storage policies
    */
   public BlockStoragePolicy[] getStoragePolicies() throws IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("getStoragePolicies", traceSampler);
     try {
       return namenode.getStoragePolicies();
@@ -2592,6 +2601,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#setSafeMode(HdfsConstants.SafeModeAction,boolean)
    */
   public boolean setSafeMode(SafeModeAction action) throws IOException {
+    checkOpen();
     return setSafeMode(action, false);
   }
   
@@ -2794,6 +2804,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
   
   public RemoteIterator<CacheDirectiveEntry> listCacheDirectives(
       CacheDirectiveInfo filter) throws IOException {
+    checkOpen();
     return new CacheDirectiveIterator(namenode, filter, traceSampler);
   }
 
@@ -2834,6 +2845,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
   }
 
   public RemoteIterator<CachePoolEntry> listCachePools() throws IOException {
+    checkOpen();
     return new CachePoolIterator(namenode, traceSampler);
   }
 
@@ -2843,6 +2855,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#saveNamespace()
    */
   void saveNamespace() throws AccessControlException, IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("saveNamespace", traceSampler);
     try {
       namenode.saveNamespace();
@@ -2860,6 +2873,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#rollEdits()
    */
   long rollEdits() throws AccessControlException, IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("rollEdits", traceSampler);
     try {
       return namenode.rollEdits();
@@ -2882,6 +2896,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    */
   boolean restoreFailedStorage(String arg)
       throws AccessControlException, IOException{
+    checkOpen();
     TraceScope scope = Trace.startSpan("restoreFailedStorage", traceSampler);
     try {
       return namenode.restoreFailedStorage(arg);
@@ -2898,6 +2913,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#refreshNodes()
    */
   public void refreshNodes() throws IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("refreshNodes", traceSampler);
     try {
       namenode.refreshNodes();
@@ -2912,6 +2928,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#metaSave(String)
    */
   public void metaSave(String pathname) throws IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("metaSave", traceSampler);
     try {
       namenode.metaSave(pathname);
@@ -2929,6 +2946,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#setBalancerBandwidth(long)
    */
   public void setBalancerBandwidth(long bandwidth) throws IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("setBalancerBandwidth", traceSampler);
     try {
       namenode.setBalancerBandwidth(bandwidth);
@@ -2941,6 +2959,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#finalizeUpgrade()
    */
   public void finalizeUpgrade() throws IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("finalizeUpgrade", traceSampler);
     try {
       namenode.finalizeUpgrade();
@@ -2950,6 +2969,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
   }
 
   RollingUpgradeInfo rollingUpgrade(RollingUpgradeAction action) throws IOException {
+    checkOpen();
     TraceScope scope = Trace.startSpan("rollingUpgrade", traceSampler);
     try {
       return namenode.rollingUpgrade(action);
@@ -3038,6 +3058,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    * @see ClientProtocol#getContentSummary(String)
    */
   ContentSummary getContentSummary(String src) throws IOException {
+    checkOpen();
     TraceScope scope = getPathTraceScope("getContentSummary", src);
     try {
       return namenode.getContentSummary(src);
@@ -3056,6 +3077,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
    */
   void setQuota(String src, long namespaceQuota, long storagespaceQuota)
       throws IOException {
+    checkOpen();
     // sanity check
     if ((namespaceQuota <= 0 && namespaceQuota != HdfsConstants.QUOTA_DONT_SET &&
          namespaceQuota != HdfsConstants.QUOTA_RESET) ||
@@ -3433,11 +3455,13 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
   }
 
   public DFSInotifyEventInputStream getInotifyEventStream() throws IOException {
+    checkOpen();
     return new DFSInotifyEventInputStream(traceSampler, namenode);
   }
 
   public DFSInotifyEventInputStream getInotifyEventStream(long lastReadTxid)
       throws IOException {
+    checkOpen();
     return new DFSInotifyEventInputStream(traceSampler, namenode, lastReadTxid);
   }
 
