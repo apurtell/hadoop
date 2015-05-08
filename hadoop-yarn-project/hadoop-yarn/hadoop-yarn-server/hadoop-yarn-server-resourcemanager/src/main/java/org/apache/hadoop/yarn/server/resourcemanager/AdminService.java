@@ -521,7 +521,10 @@ public class AdminService extends CompositeService implements
         conf, policyProvider);
     rmContext.getResourceTrackerService().refreshServiceAcls(
         conf, policyProvider);
-    
+
+    RMAuditLogger.logSuccess(UserGroupInformation.getCurrentUser()
+        .getShortUserName(), argName, "AdminService");
+
     return recordFactory.newRecordInstance(RefreshServiceAclsResponse.class);
   }
 
