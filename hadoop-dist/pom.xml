@@ -171,6 +171,28 @@
               </execution>
             </executions>
           </plugin>
+          <!-- SFDC change - Install the dist hadoop tar file so downstream projects can pick it from local maven repo -->
+          <plugin>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>2.5.2</version>
+            <executions>
+              <execution>
+                <id>attach-file</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <url>file:///${project.build.directory}</url>
+                  <file>target/hadoop-${project.version}.tar.gz</file>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${project.artifactId}</artifactId>
+                  <packaging>tar.gz</packaging>
+                  <version>${project.version}</version>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
