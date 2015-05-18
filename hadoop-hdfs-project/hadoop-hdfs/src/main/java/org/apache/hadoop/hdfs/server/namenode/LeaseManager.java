@@ -146,12 +146,12 @@ public class LeaseManager {
   /** @return the number of paths contained in all leases */
   synchronized int countPath() {
     int count = 0;
-    for(Lease lease : sortedLeases) {
+    for (Lease lease : sortedLeases) {
       count += lease.getPaths().size();
     }
     return count;
   }
-  
+
   /**
    * Adds (or re-adds) the lease for the specified file.
    */
