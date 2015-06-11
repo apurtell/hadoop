@@ -23,11 +23,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +45,6 @@ import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.hdfs.RemotePeerFactory;
 import org.apache.hadoop.hdfs.net.Peer;
 import org.apache.hadoop.hdfs.net.TcpPeerServer;
-import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.BlockListAsLongs;
 import org.apache.hadoop.hdfs.protocol.DatanodeID;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
@@ -58,7 +55,6 @@ import org.apache.hadoop.hdfs.server.blockmanagement.BlockManager;
 import org.apache.hadoop.hdfs.server.blockmanagement.BlockManagerTestUtil;
 import org.apache.hadoop.hdfs.server.common.HdfsServerConstants;
 import org.apache.hadoop.hdfs.server.namenode.FSNamesystem;
-import org.apache.hadoop.hdfs.server.protocol.BlockReportContext;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeStorage;
 import org.apache.hadoop.hdfs.server.protocol.NamenodeProtocols;
@@ -117,10 +113,6 @@ public class TestDataNodeVolumeFailure {
     if(cluster != null) {
       cluster.shutdown();
     }
-    for (int i = 0; i < 3; i++) {
-      FileUtil.setExecutable(new File(dataDir, "data"+(2*i+1)), true);
-      FileUtil.setExecutable(new File(dataDir, "data"+(2*i+2)), true);
-    }
   }
   
   /*
@@ -155,7 +147,7 @@ public class TestDataNodeVolumeFailure {
         !deteteBlocks(failedDir)
         ) {
       throw new IOException("Could not delete hdfs directory '" + failedDir + "'");
-    }    
+    }
     data_fail.setReadOnly();
     failedDir.setReadOnly();
     System.out.println("Deleteing " + failedDir.getPath() + "; exist=" + failedDir.exists());
@@ -224,8 +216,7 @@ public class TestDataNodeVolumeFailure {
     // Fail the first volume on both datanodes
     File dn1Vol1 = new File(dataDir, "data"+(2*0+1));
     File dn2Vol1 = new File(dataDir, "data"+(2*1+1));
-    assertTrue("Couldn't chmod local vol", FileUtil.setExecutable(dn1Vol1, false));
-    assertTrue("Couldn't chmod local vol", FileUtil.setExecutable(dn2Vol1, false));
+    DataNodeTestUtils.injectDataDirFailure(dn1Vol1, dn2Vol1);
 
     Path file2 = new Path("/test2");
     DFSTestUtil.createFile(fs, file2, 1024, (short)3, 1L);
