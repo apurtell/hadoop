@@ -379,6 +379,7 @@ public class TestFileCreation {
     Configuration conf = new HdfsConfiguration();
     SimulatedFSDataset.setFactory(conf);
     conf.setBoolean(DFSConfigKeys.DFS_PERMISSIONS_ENABLED_KEY, false);
+
     final MiniDFSCluster cluster = new MiniDFSCluster.Builder(conf).build();
     FileSystem fs = cluster.getFileSystem();
 
@@ -410,7 +411,7 @@ public class TestFileCreation {
       }
       // NameNodeProxies' createNNProxyWithClientProtocol has 5 retries.
       assertCounter("AlreadyBeingCreatedExceptionNumOps",
-          6L, getMetrics(metricsName));
+          1L, getMetrics(metricsName));
       FSDataOutputStream stm2 = fs2.create(p, true);
       stm2.write(2);
       stm2.close();
