@@ -1312,9 +1312,10 @@ public class DFSOutputStream extends FSOutputSummer
           assert null == blockReplyStream : "Previous blockReplyStream unclosed";
           s = createSocketForPipeline(nodes[0], nodes.length, dfsClient);
           long writeTimeout = dfsClient.getDatanodeWriteTimeout(nodes.length);
-          
+          long readTimeout = dfsClient.getDatanodeReadTimeout(nodes.length);
+
           OutputStream unbufOut = NetUtils.getOutputStream(s, writeTimeout);
-          InputStream unbufIn = NetUtils.getInputStream(s);
+          InputStream unbufIn = NetUtils.getInputStream(s, readTimeout);
           IOStreamPair saslStreams = dfsClient.saslClient.socketSend(s,
             unbufOut, unbufIn, dfsClient, accessToken, nodes[0]);
           unbufOut = saslStreams.out;
