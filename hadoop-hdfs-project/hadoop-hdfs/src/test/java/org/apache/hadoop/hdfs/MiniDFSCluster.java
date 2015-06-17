@@ -1302,7 +1302,7 @@ public class MiniDFSCluster {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
         }
-        if (++i > 10) {
+        if (++i > 30) {
           final String msg = "Timed out waiting for Mini HDFS Cluster to start";
           LOG.error(msg);
           throw new IOException(msg);
