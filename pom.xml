@@ -39,6 +39,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     </dependencies>
   </dependencyManagement>
 
+  <!-- Commit tags to internal repo when doing a release -->
+  <scm>
+    <url>http://git.soma.salesforce.com/hbase/sfdc-hadoop-2.x-build</url>
+    <connection>scm:git:git.soma.salesforce.com:hbase/sfdc-hadoop-2.x-build.git</connection>
+    <developerConnection>scm:git:git.soma.salesforce.com:hbase/sfdc-hadoop-2.x-build.git</developerConnection>
+  </scm>
+
   <distributionManagement>
     <repository>
       <id>nexus</id>
