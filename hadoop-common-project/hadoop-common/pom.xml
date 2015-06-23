@@ -12,20 +12,17 @@
   See the License for the specific language governing permissions and
   limitations under the License. See accompanying LICENSE file.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.hadoop</groupId>
     <artifactId>hadoop-project-dist</artifactId>
-    <version>2.6.0-cdh5.4.2-sfdc-1.0-SNAPSHOT</version>
+    <version>2.6.0-cdh5.4.2-sfdc-1.0</version>
     <relativePath>../../hadoop-project-dist</relativePath>
   </parent>
   <groupId>org.apache.hadoop</groupId>
   <artifactId>hadoop-common</artifactId>
-  <version>2.6.0-cdh5.4.2-sfdc-1.0-SNAPSHOT</version>
+  <version>2.6.0-cdh5.4.2-sfdc-1.0</version>
   <description>Apache Hadoop Common</description>
   <name>Apache Hadoop Common</name>
   <packaging>jar</packaging>
@@ -471,12 +468,12 @@
                 TODO: there are tests (TestLocalFileSystem#testCopy) that fail if data
                 TODO: from a previous run is present
                 -->
-                <delete dir="${test.build.data}"/>
-                <mkdir dir="${test.build.data}"/>
-                <mkdir dir="${hadoop.log.dir}"/>
+                <delete dir="${test.build.data}" />
+                <mkdir dir="${test.build.data}" />
+                <mkdir dir="${hadoop.log.dir}" />
 
                 <copy toDir="${project.build.directory}/test-classes">
-                  <fileset dir="${basedir}/src/main/conf"/>
+                  <fileset dir="${basedir}/src/main/conf" />
                 </copy>
               </target>
             </configuration>
@@ -491,8 +488,8 @@
               <target>
                 <copy toDir="${test.cache.data}">
                   <fileset dir="${basedir}/src/test/java/org/apache/hadoop/fs">
-                    <include name="test-untar.tar"/>
-                    <include name="test-untar.tgz"/>
+                    <include name="test-untar.tar" />
+                    <include name="test-untar.tgz" />
                   </fileset>
                 </copy>
               </target>
@@ -505,8 +502,8 @@
             </goals>
             <configuration>
               <tasks>
-                <copy file="src/main/resources/core-default.xml" todir="src/site/resources"/>
-                <copy file="src/main/xsl/configuration.xsl" todir="src/site/resources"/>
+                <copy file="src/main/resources/core-default.xml" todir="src/site/resources" />
+                <copy file="src/main/xsl/configuration.xsl" todir="src/site/resources" />
               </tasks>
             </configuration>
           </execution>
@@ -565,17 +562,17 @@
       </activation>
       <properties>
         <require.bzip2>false</require.bzip2>
-        <snappy.prefix></snappy.prefix>
-        <snappy.lib></snappy.lib>
-        <snappy.include></snappy.include>
+        <snappy.prefix />
+        <snappy.lib />
+        <snappy.include />
         <require.snappy>false</require.snappy>
-        <openssl.prefix></openssl.prefix>
-        <openssl.lib></openssl.lib>
-        <openssl.include></openssl.include>
+        <openssl.prefix />
+        <openssl.lib />
+        <openssl.include />
         <require.openssl>false</require.openssl>
         <runningWithNative>true</runningWithNative>
         <bundle.openssl.in.bin>false</bundle.openssl.in.bin>
-        <extra.libhadoop.rpath></extra.libhadoop.rpath>
+        <extra.libhadoop.rpath />
       </properties>
       <build>
         <plugins>
@@ -647,14 +644,14 @@
                 <configuration>
                   <target>
                     <exec executable="cmake" dir="${project.build.directory}/native" failonerror="true">
-                      <arg line="${basedir}/src/ -DGENERATED_JAVAH=${project.build.directory}/native/javah -DJVM_ARCH_DATA_MODEL=${sun.arch.data.model} -DREQUIRE_BZIP2=${require.bzip2} -DREQUIRE_SNAPPY=${require.snappy} -DCUSTOM_SNAPPY_PREFIX=${snappy.prefix} -DCUSTOM_SNAPPY_LIB=${snappy.lib} -DCUSTOM_SNAPPY_INCLUDE=${snappy.include} -DREQUIRE_OPENSSL=${require.openssl} -DCUSTOM_OPENSSL_PREFIX=${openssl.prefix} -DCUSTOM_OPENSSL_LIB=${openssl.lib} -DCUSTOM_OPENSSL_INCLUDE=${openssl.include} -DEXTRA_LIBHADOOP_RPATH=${extra.libhadoop.rpath}"/>
+                      <arg line="${basedir}/src/ -DGENERATED_JAVAH=${project.build.directory}/native/javah -DJVM_ARCH_DATA_MODEL=${sun.arch.data.model} -DREQUIRE_BZIP2=${require.bzip2} -DREQUIRE_SNAPPY=${require.snappy} -DCUSTOM_SNAPPY_PREFIX=${snappy.prefix} -DCUSTOM_SNAPPY_LIB=${snappy.lib} -DCUSTOM_SNAPPY_INCLUDE=${snappy.include} -DREQUIRE_OPENSSL=${require.openssl} -DCUSTOM_OPENSSL_PREFIX=${openssl.prefix} -DCUSTOM_OPENSSL_LIB=${openssl.lib} -DCUSTOM_OPENSSL_INCLUDE=${openssl.include} -DEXTRA_LIBHADOOP_RPATH=${extra.libhadoop.rpath}" />
                     </exec>
                     <exec executable="make" dir="${project.build.directory}/native" failonerror="true">
-                      <arg line="VERBOSE=1"/>
+                      <arg line="VERBOSE=1" />
                     </exec>
                     <!-- The second make is a workaround for HADOOP-9215.  It can
                          be removed when version 2.6 of cmake is no longer supported . -->
-                    <exec executable="make" dir="${project.build.directory}/native" failonerror="true"></exec>
+                    <exec executable="make" dir="${project.build.directory}/native" failonerror="true" />
                   </target>
                 </configuration>
               </execution>
@@ -665,9 +662,9 @@
                 <configuration>
                   <target>
                     <exec executable="sh" failonerror="true" dir="${project.build.directory}/native">
-                      <arg value="-c"/>
-                      <arg value="[ x$SKIPTESTS = xtrue ] || ${project.build.directory}/native/test_bulk_crc32"/>
-                      <env key="SKIPTESTS" value="${skipTests}"/>
+                      <arg value="-c" />
+                      <arg value="[ x$SKIPTESTS = xtrue ] || ${project.build.directory}/native/test_bulk_crc32" />
+                      <env key="SKIPTESTS" value="${skipTests}" />
                     </exec>
                   </target>
                 </configuration>
@@ -686,14 +683,14 @@
         </os>
       </activation>
       <properties>
-        <snappy.prefix></snappy.prefix>
-        <snappy.lib></snappy.lib>
-        <snappy.include></snappy.include>
+        <snappy.prefix />
+        <snappy.lib />
+        <snappy.include />
         <require.snappy>false</require.snappy>
         <bundle.snappy.in.bin>true</bundle.snappy.in.bin>
-        <openssl.prefix></openssl.prefix>
-        <openssl.lib></openssl.lib>
-        <openssl.include></openssl.include>
+        <openssl.prefix />
+        <openssl.lib />
+        <openssl.include />
         <require.openssl>false</require.openssl>
         <runningWithNative>true</runningWithNative>
         <bundle.openssl.in.bin>false</bundle.openssl.in.bin>

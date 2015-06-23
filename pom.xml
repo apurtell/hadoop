@@ -12,9 +12,7 @@
   See the License for the specific language governing permissions and
   limitations under the License. See accompanying LICENSE file.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.salesforce.hbase</groupId>
@@ -23,7 +21,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   </parent>
   <groupId>org.apache.hadoop</groupId>
   <artifactId>hadoop-main</artifactId>
-  <version>2.6.0-cdh5.4.2-sfdc-1.0-SNAPSHOT</version>
+  <version>2.6.0-cdh5.4.2-sfdc-1.0</version>
   <description>Apache Hadoop Main</description>
   <name>Apache Hadoop Main</name>
   <packaging>pom</packaging>
@@ -44,6 +42,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <url>http://git.soma.salesforce.com/hbase/sfdc-hadoop-2.x-build</url>
     <connection>scm:git:git.soma.salesforce.com:hbase/sfdc-hadoop-2.x-build.git</connection>
     <developerConnection>scm:git:git.soma.salesforce.com:hbase/sfdc-hadoop-2.x-build.git</developerConnection>
+    <tag>hadoop-main-2.6.0-cdh5.4.2-sfdc-1.0</tag>
   </scm>
 
   <distributionManagement>
@@ -415,9 +414,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                 </goals>
                 <configuration>
                   <target>
-                    <echo/>
+                    <echo />
                     <echo>Hadoop source tar available at: ${basedir}/hadoop-dist/target/hadoop-${project.version}-src.tar.gz</echo>
-                    <echo/>
+                    <echo />
                   </target>
                 </configuration>
               </execution>
