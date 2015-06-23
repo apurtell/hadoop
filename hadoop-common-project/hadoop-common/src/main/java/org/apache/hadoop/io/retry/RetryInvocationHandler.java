@@ -137,7 +137,9 @@ public class RetryInvocationHandler<T> implements RpcInvocationHandler {
               msg += " after " + invocationFailoverCount + " fail over attempts"; 
             }
             msg += ". Trying to fail over " + formatSleepMessage(action.delayMillis);
-            LOG.info(msg, e);
+            if (LOG.isDebugEnabled()) {
+              LOG.debug(msg, e);
+            }
           } else {
             if(LOG.isDebugEnabled()) {
               LOG.debug("Exception while invoking " + method.getName()
