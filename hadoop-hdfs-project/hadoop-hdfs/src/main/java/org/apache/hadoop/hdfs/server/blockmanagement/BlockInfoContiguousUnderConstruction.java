@@ -18,8 +18,8 @@
 package org.apache.hadoop.hdfs.server.blockmanagement;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.hdfs.protocol.Block;
@@ -257,7 +257,7 @@ public class BlockInfoContiguousUnderConstruction extends BlockInfoContiguous {
     for (ReplicaUnderConstruction r : replicas) {
       if (genStamp != r.getGenerationStamp()) {
         r.getExpectedStorageLocation().removeBlock(this);
-        NameNode.blockStateChangeLog.info("BLOCK* Removing stale replica "
+        NameNode.blockStateChangeLog.debug("BLOCK* Removing stale replica "
             + "from location: {}", r.getExpectedStorageLocation());
       }
     }
@@ -326,7 +326,7 @@ public class BlockInfoContiguousUnderConstruction extends BlockInfoContiguous {
     if (primary != null) {
       primary.getExpectedStorageLocation().getDatanodeDescriptor().addBlockToBeRecovered(this);
       primary.setChosenAsPrimary(true);
-      NameNode.blockStateChangeLog.info(
+      NameNode.blockStateChangeLog.debug(
           "BLOCK* {} recovery started, primary={}", this, primary);
     }
   }
