@@ -273,6 +273,14 @@ public class DFSOutputStream extends FSOutputSummer
     /** Append on an existing block? */
     private final boolean isAppend;
 
+    // List of congested data nodes. The stream will back off if the DataNodes
+    // are congested
+    private final List<DatanodeInfo> congestedNodes = new ArrayList<>();
+    private static final int CONGESTION_BACKOFF_MEAN_TIME_IN_MS = 5000;
+    private static final int CONGESTION_BACK_OFF_MAX_TIME_IN_MS =
+        CONGESTION_BACKOFF_MEAN_TIME_IN_MS * 10;
+    private int lastCongestionBackoffTime;
+
     private DataStreamer(HdfsFileStatus stat, ExtendedBlock block) {
       isAppend = false;
       isLazyPersistFile = isLazyPersist(stat);
@@ -430,6 +438,11 @@ public class DFSOutputStream extends FSOutputSummer
               one = createHeartbeatPacket();
               assert one != null;
             } else {
+              try {
+                backOffIfNecessary();
+              } catch (InterruptedException e) {
+                DFSClient.LOG.warn("Caught exception ", e);
+              }
               one = dataQueue.getFirst(); // regular data packet
               long parents[] = one.getTraceParents();
               if (parents.length > 0) {
@@ -572,6 +585,40 @@ public class DFSOutputStream extends FSOutputSummer
         }
       }
       closeInternal();
+    }
+
+    /**
+     * This function sleeps for a certain amount of time when the writing
+     * pipeline is congested. The function calculates the time based on a
+     * decorrelated filter.
+     *
+     * @see
+     * <a href="http://www.awsarchitectureblog.com/2015/03/backoff.html">
+     *   http://www.awsarchitectureblog.com/2015/03/backoff.html</a>
+     */
+    private void backOffIfNecessary() throws InterruptedException {
+      int t = 0;
+      synchronized (congestedNodes) {
+        if (!congestedNodes.isEmpty()) {
+          StringBuilder sb = new StringBuilder("DataNode");
+          for (DatanodeInfo i : congestedNodes) {
+            sb.append(' ').append(i);
+          }
+          int range = Math.abs(lastCongestionBackoffTime * 3 -
+            CONGESTION_BACKOFF_MEAN_TIME_IN_MS);
+          int base = Math.min(lastCongestionBackoffTime * 3,
+            CONGESTION_BACKOFF_MEAN_TIME_IN_MS);
+          t = Math.min(CONGESTION_BACK_OFF_MAX_TIME_IN_MS,
+            (int)(base + Math.random() * range));
+          lastCongestionBackoffTime = t;
+          sb.append(" are congested. Backing off for ").append(t).append(" ms");
+          DFSClient.LOG.info(sb.toString());
+          congestedNodes.clear();
+        }
+      }
+      if (t != 0) {
+        Thread.sleep(t);
+      }
     }
 
     private void closeInternal() {
@@ -745,9 +792,14 @@ public class DFSOutputStream extends FSOutputSummer
 
             long seqno = ack.getSeqno();
             // processes response status from datanodes.
+            ArrayList<DatanodeInfo> congestedNodesFromAck = new ArrayList<>();
             for (int i = ack.getNumOfReplies()-1; i >=0  && dfsClient.clientRunning; i--) {
               final Status reply = PipelineAck.getStatusFromHeader(ack
                 .getHeaderFlag(i));
+              if (PipelineAck.getECNFromHeader(ack.getHeaderFlag(i)) ==
+                  PipelineAck.ECN.CONGESTED) {
+                congestedNodesFromAck.add(targets[i]);
+              }
               // Restart will not be treated differently unless it is
               // the local node or the only one in the pipeline.
               if (PipelineAck.isRestartOOBStatus(reply) &&
@@ -768,7 +820,19 @@ public class DFSOutputStream extends FSOutputSummer
                     targets[i]);
               }
             }
-            
+
+            if (!congestedNodesFromAck.isEmpty()) {
+              synchronized (congestedNodes) {
+                congestedNodes.clear();
+                congestedNodes.addAll(congestedNodesFromAck);
+              }
+            } else {
+              synchronized (congestedNodes) {
+                congestedNodes.clear();
+                lastCongestionBackoffTime = 0;
+              }
+            }
+
             assert seqno != PipelineAck.UNKOWN_SEQNO : 
               "Ack for unknown seqno should be a failed ack: " + ack;
             if (seqno == DFSPacket.HEART_BEAT_SEQNO) {  // a heartbeat ack

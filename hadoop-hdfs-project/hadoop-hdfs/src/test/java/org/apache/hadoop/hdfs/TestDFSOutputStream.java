@@ -20,16 +20,21 @@ package org.apache.hadoop.hdfs;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DFSOutputStream.DataStreamer;
+import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
+
+import static org.mockito.Mockito.mock;
 
 public class TestDFSOutputStream {
   static MiniDFSCluster cluster;
@@ -95,6 +100,25 @@ public class TestDFSOutputStream {
     // If PKT_MAX_HEADER_LEN is 257, actual packet size come to over 64KB
     // without a fix on HDFS-7308.
     Assert.assertTrue((Integer) field.get(dos) + 257 < packetSize);
+  }
+
+  @Test
+  public void testCongestionBackoff() throws IOException {
+    DistributedFileSystem fs = cluster.getFileSystem();
+    try (FSDataOutputStream os = fs.create(new Path("/test"))) {
+      try (DFSOutputStream dos = (DFSOutputStream) Whitebox.getInternalState(os,
+          "wrappedStream")) {
+        DataStreamer stream = (DataStreamer)
+            Whitebox.getInternalState(dos, "streamer");
+        @SuppressWarnings("unchecked")
+        List<DatanodeInfo> congestedNodes = (List<DatanodeInfo>)
+            Whitebox.getInternalState(stream, "congestedNodes");
+        congestedNodes.add(mock(DatanodeInfo.class));
+        dos.write(1);
+        dos.close();
+        Assert.assertTrue(congestedNodes.isEmpty());
+      }
+    }
   }
 
   @AfterClass
