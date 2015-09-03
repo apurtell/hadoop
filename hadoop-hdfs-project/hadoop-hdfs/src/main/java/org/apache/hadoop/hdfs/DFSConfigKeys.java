@@ -798,8 +798,16 @@ public class DFSConfigKeys extends CommonConfigurationKeys {
   public static final String NNTOP_WINDOWS_MINUTES_KEY =
       "dfs.namenode.top.windows.minutes";
   public static final String[] NNTOP_WINDOWS_MINUTES_DEFAULT = {"1","5","25"};
+
   public static final String DFS_PIPELINE_ECN_ENABLED = "dfs.pipeline.ecn";
   public static final boolean DFS_PIPELINE_ECN_ENABLED_DEFAULT = false;
+  public static final String DFS_CONGESTION_BACKOFF_MEAN_TIME =
+      "dfs.congestion.backoff.time.mean";
+  public static final int DFS_CONGESTION_BACKOFF_MEAN_TIME_DEFAULT = 5000;
+  public static final String DFS_CONGESTION_BACKOFF_MAX_TIME =
+      "dfs.congestion.backoff.time.max";
+  public static final int DFS_CONGESTION_BACKOFF_MAX_TIME_DEFAULT =
+      DFS_CONGESTION_BACKOFF_MEAN_TIME_DEFAULT * 10;
 
   // Key Provider Cache Expiry
   public static final String DFS_CLIENT_KEY_PROVIDER_CACHE_EXPIRY_MS =
@@ -807,6 +815,7 @@ public class DFSConfigKeys extends CommonConfigurationKeys {
   // 10 days
   public static final long DFS_CLIENT_KEY_PROVIDER_CACHE_EXPIRY_DEFAULT =
       TimeUnit.DAYS.toMillis(10);
+
   public static final String DFS_DATANODE_BLOCK_PINNING_ENABLED = 
     "dfs.datanode.block-pinning.enabled";
   public static final boolean DFS_DATANODE_BLOCK_PINNING_ENABLED_DEFAULT =

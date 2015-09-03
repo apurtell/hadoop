@@ -276,10 +276,7 @@ public class DFSOutputStream extends FSOutputSummer
     // List of congested data nodes. The stream will back off if the DataNodes
     // are congested
     private final List<DatanodeInfo> congestedNodes = new ArrayList<>();
-    private static final int CONGESTION_BACKOFF_MEAN_TIME_IN_MS = 5000;
-    private static final int CONGESTION_BACK_OFF_MAX_TIME_IN_MS =
-        CONGESTION_BACKOFF_MEAN_TIME_IN_MS * 10;
-    private int lastCongestionBackoffTime;
+    private long lastCongestionBackoffTime;
 
     private DataStreamer(HdfsFileStatus stat, ExtendedBlock block) {
       isAppend = false;
@@ -597,19 +594,19 @@ public class DFSOutputStream extends FSOutputSummer
      *   http://www.awsarchitectureblog.com/2015/03/backoff.html</a>
      */
     private void backOffIfNecessary() throws InterruptedException {
-      int t = 0;
+      long t = 0;
       synchronized (congestedNodes) {
         if (!congestedNodes.isEmpty()) {
           StringBuilder sb = new StringBuilder("DataNode");
           for (DatanodeInfo i : congestedNodes) {
             sb.append(' ').append(i);
           }
-          int range = Math.abs(lastCongestionBackoffTime * 3 -
-            CONGESTION_BACKOFF_MEAN_TIME_IN_MS);
-          int base = Math.min(lastCongestionBackoffTime * 3,
-            CONGESTION_BACKOFF_MEAN_TIME_IN_MS);
-          t = Math.min(CONGESTION_BACK_OFF_MAX_TIME_IN_MS,
-            (int)(base + Math.random() * range));
+          long range = Math.abs(lastCongestionBackoffTime * 3 -
+            dfsClient.getConf().congestionBackoffMeanTime);
+          long base = Math.min(lastCongestionBackoffTime * 3,
+            dfsClient.getConf().congestionBackoffMeanTime);
+          t = Math.min(dfsClient.getConf().congestionBackoffMaxTime,
+            (long)(base + Math.random() * range));
           lastCongestionBackoffTime = t;
           sb.append(" are congested. Backing off for ").append(t).append(" ms");
           DFSClient.LOG.info(sb.toString());

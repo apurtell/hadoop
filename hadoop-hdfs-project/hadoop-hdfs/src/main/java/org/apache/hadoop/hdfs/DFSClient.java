@@ -337,6 +337,8 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
     final long shortCircuitMmapCacheExpiryMs;
     final long shortCircuitMmapCacheRetryTimeout;
     final long shortCircuitCacheStaleThresholdMs;
+    final long congestionBackoffMeanTime;
+    final long congestionBackoffMaxTime;
 
     final long keyProviderCacheExpiryMs;
     public BlockReaderFactory.FailureInjector brfFailureInjector =
@@ -509,6 +511,13 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
       keyProviderCacheExpiryMs = conf.getLong(
           DFSConfigKeys.DFS_CLIENT_KEY_PROVIDER_CACHE_EXPIRY_MS,
           DFSConfigKeys.DFS_CLIENT_KEY_PROVIDER_CACHE_EXPIRY_DEFAULT);
+
+      congestionBackoffMeanTime = conf.getLong(
+          DFSConfigKeys.DFS_CONGESTION_BACKOFF_MEAN_TIME,
+          DFSConfigKeys.DFS_CONGESTION_BACKOFF_MEAN_TIME_DEFAULT);
+      congestionBackoffMaxTime = conf.getLong(
+        DFSConfigKeys.DFS_CONGESTION_BACKOFF_MAX_TIME,
+        DFSConfigKeys.DFS_CONGESTION_BACKOFF_MAX_TIME_DEFAULT);
     }
 
     public boolean isUseLegacyBlockReaderLocal() {
