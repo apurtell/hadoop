@@ -606,7 +606,12 @@ class BlockSender implements java.io.Closeable {
          */
         String ioem = e.getMessage();
         if (!ioem.startsWith("Broken pipe") && !ioem.startsWith("Connection reset")) {
-          LOG.error("BlockSender.sendChunks() exception: ", e);
+          // Debug level because we do not care much about it. This can
+          // happen frequently when the client reads part of a block and
+          // then decides not to read the rest.
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("BlockSender.sendChunks() exception: ", e);
+          }
         }
         datanode.getBlockScanner().markSuspectBlock(
               volumeRef.getVolume().getStorageID(),
