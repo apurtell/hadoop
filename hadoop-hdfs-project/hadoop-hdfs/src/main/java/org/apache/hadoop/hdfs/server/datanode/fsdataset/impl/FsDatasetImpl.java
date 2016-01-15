@@ -115,6 +115,7 @@ import org.apache.hadoop.util.DiskChecker.DiskErrorException;
 import org.apache.hadoop.util.DiskChecker.DiskOutOfSpaceException;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.hadoop.util.Time;
+import org.apache.hadoop.util.Timer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -129,6 +130,7 @@ import com.google.common.collect.Sets;
 class FsDatasetImpl implements FsDatasetSpi<FsVolumeImpl> {
   static final Log LOG = LogFactory.getLog(FsDatasetImpl.class);
   private final static boolean isNativeIOAvailable;
+  private Timer timer;
   static {
     isNativeIOAvailable = NativeIO.isAvailable();
     if (Path.WINDOWS && !isNativeIOAvailable) {
@@ -422,7 +424,7 @@ class FsDatasetImpl implements FsDatasetSpi<FsVolumeImpl> {
     for (final NamespaceInfo nsInfo : nsInfos) {
       String bpid = nsInfo.getBlockPoolID();
       try {
-        fsVolume.addBlockPool(bpid, this.conf);
+        fsVolume.addBlockPool(bpid, this.conf, this.timer);
         fsVolume.getVolumeMap(bpid, tempVolumeMap, ramDiskReplicaTracker);
       } catch (IOException e) {
         LOG.warn("Caught exception when adding " + fsVolume +
@@ -3081,6 +3083,11 @@ class FsDatasetImpl implements FsDatasetSpi<FsVolumeImpl> {
         }
       }
     }
+  }
+
+  @VisibleForTesting
+  public void setTimer(Timer newTimer) {
+    this.timer = newTimer;
   }
 }
 
