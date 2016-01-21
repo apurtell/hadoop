@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.zip.Checksum;
@@ -59,6 +60,8 @@ import org.apache.hadoop.util.Daemon;
 import org.apache.hadoop.util.DataChecksum;
 import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.Time;
+import org.apache.htrace.Span;
+import org.apache.htrace.Trace;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -133,6 +136,7 @@ class BlockReceiver implements Closeable {
   private long lastResponseTime = 0;
   private boolean isReplaceBlock = false;
   private DataOutputStream replyOut = null;
+  private long maxWriteToDiskMs = 0;
   
   private boolean pinning;
   private long lastSentTime;
@@ -290,11 +294,19 @@ class BlockReceiver implements Closeable {
     return replicaInfo.getStorageUuid();
   }
 
+  private static final byte[] MAX_WRITE_TO_DISK_MS =
+      "maxWriteToDiskMs".getBytes(Charset.forName("UTF-8"));
+
   /**
    * close files and release volume reference.
    */
   @Override
   public void close() throws IOException {
+    Span span = Trace.currentSpan();
+    if (span != null) {
+      span.addKVAnnotation(MAX_WRITE_TO_DISK_MS,
+            Long.toString(maxWriteToDiskMs).getBytes(Charset.forName("UTF-8")));
+    }
     packetReceiver.close();
 
     IOException ioe = null;
@@ -690,6 +702,9 @@ class BlockReceiver implements Closeable {
           long begin = Time.monotonicNow();
           out.write(dataBuf.array(), startByteToDisk, numBytesToDisk);
           long duration = Time.monotonicNow() - begin;
+          if (duration > maxWriteToDiskMs) {
+            maxWriteToDiskMs = duration;
+          }
           if (duration > datanodeSlowLogThresholdMs) {
             LOG.warn("Slow BlockReceiver write data to disk cost:" + duration
                 + "ms (threshold=" + datanodeSlowLogThresholdMs + "ms)");
