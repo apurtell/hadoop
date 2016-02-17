@@ -15,6 +15,9 @@ Release 2.7.2 - 2016-01-25
 
   OPTIMIZATIONS
 
+    HADOOP-12810. FileSystem#listLocatedStatus causes unnecessary RPC calls
+    (Ryan Blue via vinayakumarb)
+
   BUG FIXES
 
     HADOOP-12186. ActiveStandbyElector shouldn't call monitorLockNodeAsync
