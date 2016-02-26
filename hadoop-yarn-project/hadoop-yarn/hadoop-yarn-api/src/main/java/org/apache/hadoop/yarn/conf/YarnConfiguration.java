@@ -739,6 +739,13 @@ public class YarnConfiguration extends Configuration {
   public static final String NM_LOG_DIRS = NM_PREFIX + "log-dirs";
   public static final String DEFAULT_NM_LOG_DIRS = "/tmp/logs";
 
+  /** Default permissions for container logs. */
+  public static final String NM_DEFAULT_CONTAINER_EXECUTOR_PREFIX =
+      NM_PREFIX + "default-container-executor.";
+  public static final String NM_DEFAULT_CONTAINER_EXECUTOR_LOG_DIRS_PERMISSIONS =
+      NM_DEFAULT_CONTAINER_EXECUTOR_PREFIX + "log-dirs.permissions";
+  public static final String NM_DEFAULT_CONTAINER_EXECUTOR_LOG_DIRS_PERMISSIONS_DEFAULT = "710";
+
   public static final String NM_RESOURCEMANAGER_MINIMUM_VERSION =
       NM_PREFIX + "resourcemanager.minimum.version";
   public static final String DEFAULT_NM_RESOURCEMANAGER_MINIMUM_VERSION = "NONE";
