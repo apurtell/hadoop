@@ -18,6 +18,7 @@
 package org.apache.hadoop.security;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,11 +47,15 @@ import org.apache.hadoop.util.Timer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.htrace.Span;
+import org.apache.htrace.Trace;
+import org.apache.htrace.TraceScope;
+
 /**
  * A user-to-groups mapping service.
  * 
  * {@link Groups} allows for server to get the various group memberships
- * of a given user via the {@link #getGroups(String)} call, thus ensuring 
+ * of a given user via the {@link #getGroups(String)} call, thus ensuring
  * a consistent user-to-groups mapping and protects against vagaries of 
  * different mappings on servers and clients in a Hadoop cluster. 
  */
@@ -202,6 +207,8 @@ public class Groups {
     }
   }
 
+  private static final byte[] USER = "user".getBytes(Charset.forName("UTF-8"));
+
   /**
    * Deals with loading data into the cache.
    */
@@ -217,7 +224,17 @@ public class Groups {
      */
     @Override
     public List<String> load(String user) throws Exception {
-      List<String> groups = fetchGroupList(user);
+      List<String> groups = null;
+      TraceScope scope = Trace.startSpan("Groups#fetchGroupList");
+      try {
+        Span span = scope.getSpan();
+        if (span != null) {
+          span.addKVAnnotation(USER, user.getBytes(Charset.forName("UTF-8")));
+        }
+        groups = fetchGroupList(user);
+      } finally {
+        scope.close();
+      }
 
       if (groups.isEmpty()) {
         if (isNegativeCacheEnabled()) {
