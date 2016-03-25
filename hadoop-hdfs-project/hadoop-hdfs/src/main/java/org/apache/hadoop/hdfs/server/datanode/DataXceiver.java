@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.fs.StorageType;
+import org.apache.hadoop.hdfs.DFSConfigKeys;
 import org.apache.hadoop.hdfs.ExtendedBlockId;
 import org.apache.hadoop.hdfs.net.Peer;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
@@ -702,6 +703,9 @@ class DataXceiver extends Receiver implements Runnable {
           int writeTimeout = dnConf.socketWriteTimeout + 
                       (HdfsServerConstants.WRITE_TIMEOUT_EXTENSION * targets.length);
           NetUtils.connect(mirrorSock, mirrorTarget, timeoutValue);
+          mirrorSock.setTcpNoDelay(dnConf.getConf()
+              .getBoolean(DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_KEY,
+                  DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_DEFAULT));
           mirrorSock.setSoTimeout(timeoutValue);
           mirrorSock.setKeepAlive(true);
           mirrorSock.setSendBufferSize(HdfsConstants.DEFAULT_DATA_SOCKET_SIZE);
@@ -1090,6 +1094,9 @@ class DataXceiver extends Receiver implements Runnable {
         InetSocketAddress proxyAddr = NetUtils.createSocketAddr(dnAddr);
         proxySock = datanode.newSocket();
         NetUtils.connect(proxySock, proxyAddr, dnConf.socketTimeout);
+        proxySock.setTcpNoDelay(dnConf.getConf()
+            .getBoolean(DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_KEY,
+                DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_DEFAULT));
         proxySock.setSoTimeout(dnConf.socketTimeout);
         proxySock.setKeepAlive(true);
 

@@ -345,6 +345,8 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
     public BlockReaderFactory.FailureInjector brfFailureInjector =
       new BlockReaderFactory.FailureInjector();
 
+    final boolean dataTransferTcpNoDelay;
+
     public Conf(Configuration conf) {
       // The hdfsTimeout is currently the same as the ipc timeout 
       hdfsTimeout = Client.getTimeout(conf);
@@ -370,6 +372,9 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
           CommonConfigurationKeysPublic.IO_FILE_BUFFER_SIZE_KEY,
           CommonConfigurationKeysPublic.IO_FILE_BUFFER_SIZE_DEFAULT);
       defaultChecksumOpt = getChecksumOptFromConf(conf);
+      dataTransferTcpNoDelay = conf.getBoolean(
+          DFSConfigKeys.DFS_DATA_TRANSFER_CLIENT_TCPNODELAY_KEY,
+          DFSConfigKeys.DFS_DATA_TRANSFER_CLIENT_TCPNODELAY_DEFAULT);
       socketTimeout = conf.getInt(DFS_CLIENT_SOCKET_TIMEOUT_KEY,
           HdfsServerConstants.READ_TIMEOUT);
       /** dfs.write.packet.size is an internal config variable */
@@ -2408,6 +2413,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
         LOG.debug("Connecting to datanode " + dnAddr);
       }
       NetUtils.connect(sock, NetUtils.createSocketAddr(dnAddr), timeout);
+      sock.setTcpNoDelay(dfsClientConf.dataTransferTcpNoDelay);
       sock.setSoTimeout(timeout);
   
       OutputStream unbufOut = NetUtils.getOutputStream(sock);

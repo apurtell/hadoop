@@ -2097,6 +2097,9 @@ public class DataNode extends ReconfigurableBase
         }
         sock = newSocket();
         NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
+        sock.setTcpNoDelay(conf.getBoolean(
+            DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_KEY,
+            DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_DEFAULT));
         sock.setSoTimeout(targets.length * dnConf.socketTimeout);
 
         //
