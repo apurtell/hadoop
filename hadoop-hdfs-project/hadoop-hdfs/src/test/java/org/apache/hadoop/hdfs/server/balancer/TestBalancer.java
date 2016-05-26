@@ -71,6 +71,7 @@ import org.apache.hadoop.test.GenericTestUtils;
 import org.apache.hadoop.util.Time;
 import org.apache.hadoop.util.Tool;
 import org.apache.log4j.Level;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -314,6 +315,7 @@ public class TestBalancer {
    * @throws Exception
    */
   @Test(timeout=100000)
+  @Ignore("Flaky test in local and upstream branches")
   public void testBalancerWithPinnedBlocks() throws Exception {
     // This test assumes stick-bit based block pin mechanism available only
     // in Linux/Unix. It can be unblocked on Windows when HDFS-7759 is ready to
