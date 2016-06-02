@@ -45,6 +45,7 @@ import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.security.authentication.client.ConnectionConfigurator;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -54,6 +55,7 @@ import org.junit.Test;
  * bogus server on the namenode HTTP port, which is rigged to not accept new
  * connections or to accept connections but not send responses.
  */
+@Ignore
 public class TestWebHdfsTimeouts {
 
   private static final Log LOG = LogFactory.getLog(TestWebHdfsTimeouts.class);
