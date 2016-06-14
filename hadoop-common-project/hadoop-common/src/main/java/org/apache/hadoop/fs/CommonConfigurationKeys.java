@@ -199,6 +199,10 @@ public class CommonConfigurationKeys extends CommonConfigurationKeysPublic {
   public static final int
       HADOOP_SECURITY_DNS_LOG_SLOW_LOOKUPS_THRESHOLD_MS_DEFAULT = 1000;
 
+  public static final String SECURITY_LOCAL_FILE_OWNER_CHECK =
+      "security.local.file.owner.check";
+  public static final boolean SECURITY_LOCAL_FILE_OWNER_CHECK_DEFAULT = true;
+
   /**
    * HA health monitor and failover controller.
    */

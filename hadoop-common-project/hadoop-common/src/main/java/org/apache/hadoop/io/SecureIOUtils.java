@@ -26,6 +26,7 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.CommonConfigurationKeys;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -79,7 +80,11 @@ public class SecureIOUtils {
     // Pre-cache an instance of the raw FileSystem since we sometimes
     // do secure IO in a shutdown hook, where this call could fail.
     try {
-      rawFilesystem = FileSystem.getLocal(new Configuration()).getRaw();
+      Configuration conf = new Configuration();
+      enforceLocalFileOwner = conf.getBoolean(
+          CommonConfigurationKeys.SECURITY_LOCAL_FILE_OWNER_CHECK,
+          CommonConfigurationKeys.SECURITY_LOCAL_FILE_OWNER_CHECK_DEFAULT);
+      rawFilesystem = FileSystem.getLocal(conf).getRaw();
     } catch (IOException ie) {
       throw new RuntimeException(
       "Couldn't obtain an instance of RawLocalFileSystem.");
@@ -92,6 +97,7 @@ public class SecureIOUtils {
 
   private final static boolean skipSecurity;
   private final static FileSystem rawFilesystem;
+  private final static boolean enforceLocalFileOwner;
 
   /**
    * Open the given File for random read access, verifying the expected user/
@@ -111,7 +117,7 @@ public class SecureIOUtils {
   public static RandomAccessFile openForRandomRead(File f,
       String mode, String expectedOwner, String expectedGroup)
       throws IOException {
-    if (!UserGroupInformation.isSecurityEnabled()) {
+    if (!UserGroupInformation.isSecurityEnabled() || !enforceLocalFileOwner) {
       return new RandomAccessFile(f, mode);
     }
     return forceSecureOpenForRandomRead(f, mode, expectedOwner, expectedGroup);
@@ -152,7 +158,7 @@ public class SecureIOUtils {
    */
   public static FSDataInputStream openFSDataInputStream(File file,
       String expectedOwner, String expectedGroup) throws IOException {
-    if (!UserGroupInformation.isSecurityEnabled()) {
+    if (!UserGroupInformation.isSecurityEnabled() || !enforceLocalFileOwner) {
       return rawFilesystem.open(new Path(file.getAbsolutePath()));
     }
     return forceSecureOpenFSDataInputStream(file, expectedOwner, expectedGroup);
@@ -198,7 +204,7 @@ public class SecureIOUtils {
    */
   public static FileInputStream openForRead(File f, String expectedOwner, 
       String expectedGroup) throws IOException {
-    if (!UserGroupInformation.isSecurityEnabled()) {
+    if (!UserGroupInformation.isSecurityEnabled() || !enforceLocalFileOwner) {
       return new FileInputStream(f);
     }
     return forceSecureOpenForRead(f, expectedOwner, expectedGroup);
