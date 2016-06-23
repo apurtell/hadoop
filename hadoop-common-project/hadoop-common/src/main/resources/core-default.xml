@@ -330,6 +330,18 @@ for ldap providers in the same way as above does.
 </property>
 
 <property>
+    <name>hadoop.security.group.mapping.ldap.search.attr.memberof</name>
+    <value></value>
+    <description>
+      The attribute of the user object that identifies its group objects. By
+      default, Hadoop makes two LDAP queries per user if this value is empty. If
+      set, Hadoop will attempt to resolve group names from this attribute,
+      instead of making the second LDAP query to get group objects. The value
+      should be 'memberOf' for an MS AD installation.
+    </description>
+</property>
+
+<property>
   <name>hadoop.security.group.mapping.ldap.search.attr.member</name>
   <value>member</value>
   <description>
@@ -345,6 +357,24 @@ for ldap providers in the same way as above does.
   <description>
     The attribute of the group object that identifies the group name. The
     default will usually be appropriate for all LDAP systems.
+  </description>
+</property>
+
+<property>
+  <name>hadoop.security.group.mapping.ldap.posix.attr.uid.name</name>
+  <value>uidNumber</value>
+  <description>
+    The attribute of posixAccount to use when groups for membership.
+    Mostly useful for schemas wherein groups have memberUids that use an
+    attribute other than uidNumber.
+  </description>
+</property>
+
+<property>
+  <name>hadoop.security.group.mapping.ldap.posix.attr.gid.name</name>
+  <value>gidNumber</value>
+  <description>
+    The attribute of posixAccount indicating the group id.
   </description>
 </property>
 
