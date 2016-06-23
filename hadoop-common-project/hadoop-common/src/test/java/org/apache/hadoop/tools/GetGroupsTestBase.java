@@ -105,7 +105,7 @@ public abstract class GetGroupsTestBase {
   
   private static String getExpectedOutput(UserGroupInformation user) {
     String expectedOutput = user.getUserName() + " :";
-    for (String group : user.getGroupNames()) {
+    for (String group : user.getGroups()) {
       expectedOutput += " " + group;
     }
     return expectedOutput + System.getProperty("line.separator");

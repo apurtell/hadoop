@@ -566,7 +566,7 @@ public class KDiag extends Configured implements Tool, Closeable {
     println("Real Authentication method: %s",
       ugi.getRealAuthenticationMethod());
     title("Group names");
-    for (String name : ugi.getGroupNames()) {
+    for (String name : ugi.getGroups()) {
       println(name);
     }
     title("Credentials");

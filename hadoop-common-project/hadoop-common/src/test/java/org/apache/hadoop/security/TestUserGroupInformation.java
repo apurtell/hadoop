@@ -175,7 +175,7 @@ public class TestUserGroupInformation {
     UserGroupInformation ugi = UserGroupInformation.getCurrentUser();
     assertEquals(UserGroupInformation.getCurrentUser(),
                  UserGroupInformation.getLoginUser());
-    assertTrue(ugi.getGroupNames().length >= 1);
+    assertFalse(ugi.getGroups().isEmpty());
     verifyGroupMetrics(1);
 
     // ensure that doAs works correctly
@@ -237,10 +237,10 @@ public class TestUserGroupInformation {
     }
     assertEquals(userName, loginUserName);
 
-    String[] gi = login.getGroupNames();
-    assertEquals(groups.size(), gi.length);
-    for(int i=0; i < gi.length; i++) {
-      assertTrue(groups.contains(gi[i]));
+    Collection<String> loginGroups = login.getGroups();
+    assertEquals(groups.size(), loginGroups.size());
+    for (String loginGroup : loginGroups) {
+      assertTrue(groups.contains(loginGroup));
     }
     
     final UserGroupInformation fakeUser = 
@@ -251,7 +251,7 @@ public class TestUserGroupInformation {
         UserGroupInformation current = UserGroupInformation.getCurrentUser();
         assertFalse(current.equals(login));
         assertEquals(current, fakeUser);
-        assertEquals(0, current.getGroupNames().length);
+        assertTrue(current.getGroups().isEmpty());
         return null;
       }});
   }
@@ -431,7 +431,7 @@ public class TestUserGroupInformation {
       UserGroupInformation.createUserForTesting(USER_NAME, GROUP_NAMES);
     assertEquals(USER_NAME, uugi.getUserName());
     assertArrayEquals(new String[]{GROUP1_NAME, GROUP2_NAME, GROUP3_NAME},
-                      uugi.getGroupNames());
+                      uugi.getGroups().toArray());
   }
 
   @SuppressWarnings("unchecked") // from Mockito mocks
