@@ -527,7 +527,7 @@ public class TestProxyUsers {
       UserGroupInformation superUser = user.getRealUser();
 
       String sudoGroupName = "sudo_" + user.getShortUserName();
-      if (!Arrays.asList(superUser.getGroupNames()).contains(sudoGroupName)){
+      if (!superUser.getGroups().contains(sudoGroupName)){
         throw new AuthorizationException("User: " + superUser.getUserName()
             + " is not allowed to impersonate " + user.getUserName());
       }
