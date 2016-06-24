@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.fs.CommonConfigurationKeys;
+import org.apache.hadoop.hdfs.protocol.HdfsConstants;
 import org.apache.hadoop.hdfs.server.blockmanagement.BlockPlacementPolicyDefault;
 import org.apache.hadoop.hdfs.server.datanode.fsdataset.impl.RamDiskReplicaLruTracker;
 import org.apache.hadoop.http.HttpConfig;
@@ -410,6 +411,9 @@ public class DFSConfigKeys extends CommonConfigurationKeys {
   public static final String  DFS_NAMENODE_HOSTS_KEY = "dfs.namenode.hosts";
   public static final String  DFS_NAMENODE_HOSTS_EXCLUDE_KEY = "dfs.namenode.hosts.exclude";
   public static final String  DFS_CLIENT_SOCKET_TIMEOUT_KEY = "dfs.client.socket-timeout";
+  public static final String  DFS_CLIENT_SOCKET_SEND_BUFFER_SIZE_KEY = "dfs.client.socket.send.buffer.size";
+  public static final int     DFS_CLIENT_SOCKET_SEND_BUFFER_SIZE_DEFAULT = HdfsConstants.DEFAULT_DATA_SOCKET_SIZE;
+
   public static final String  DFS_NAMENODE_CHECKPOINT_DIR_KEY = "dfs.namenode.checkpoint.dir";
   public static final String  DFS_NAMENODE_CHECKPOINT_EDITS_DIR_KEY = "dfs.namenode.checkpoint.edits.dir";
   public static final String  DFS_HOSTS = "dfs.hosts";
@@ -842,4 +846,18 @@ public class DFSConfigKeys extends CommonConfigurationKeys {
     "dfs.datanode.block-pinning.enabled";
   public static final boolean DFS_DATANODE_BLOCK_PINNING_ENABLED_DEFAULT =
     false;
+
+  public static final String
+      DFS_DATANODE_TRANSFER_SOCKET_SEND_BUFFER_SIZE_KEY =
+      "dfs.datanode.transfer.socket.send.buffer.size";
+  public static final int
+      DFS_DATANODE_TRANSFER_SOCKET_SEND_BUFFER_SIZE_DEFAULT =
+      HdfsConstants.DEFAULT_DATA_SOCKET_SIZE;
+
+  public static final String
+      DFS_DATANODE_TRANSFER_SOCKET_RECV_BUFFER_SIZE_KEY =
+      "dfs.datanode.transfer.socket.recv.buffer.size";
+  public static final int
+      DFS_DATANODE_TRANSFER_SOCKET_RECV_BUFFER_SIZE_DEFAULT =
+      HdfsConstants.DEFAULT_DATA_SOCKET_SIZE;
 }

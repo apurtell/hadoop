@@ -300,6 +300,7 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
     final int writeMaxPackets;
     final ByteArrayManager.Conf writeByteArrayManagerConf;
     final int socketTimeout;
+    final int socketSendBufferSize;
     final int socketCacheCapacity;
     final long socketCacheExpiry;
     final long excludedNodesCacheExpiry;
@@ -377,6 +378,9 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
           DFSConfigKeys.DFS_DATA_TRANSFER_CLIENT_TCPNODELAY_DEFAULT);
       socketTimeout = conf.getInt(DFS_CLIENT_SOCKET_TIMEOUT_KEY,
           HdfsServerConstants.READ_TIMEOUT);
+      socketSendBufferSize = conf.getInt(
+          DFSConfigKeys.DFS_CLIENT_SOCKET_SEND_BUFFER_SIZE_KEY,
+          DFSConfigKeys.DFS_CLIENT_SOCKET_SEND_BUFFER_SIZE_DEFAULT);
       /** dfs.write.packet.size is an internal config variable */
       writePacketSize = conf.getInt(DFS_CLIENT_WRITE_PACKET_SIZE_KEY,
           DFS_CLIENT_WRITE_PACKET_SIZE_DEFAULT);
@@ -582,6 +586,13 @@ public class DFSClient implements java.io.Closeable, RemotePeerFactory,
             + ", effective=null");
       }
       return dataChecksum;
+    }
+
+    /**
+     * @return the socketSendBufferSize
+     */
+    public int getSocketSendBufferSize() {
+      return socketSendBufferSize;
     }
   }
  

@@ -709,8 +709,10 @@ class DataXceiver extends Receiver implements Runnable {
                   DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_DEFAULT));
           mirrorSock.setSoTimeout(timeoutValue);
           mirrorSock.setKeepAlive(true);
-          mirrorSock.setSendBufferSize(HdfsConstants.DEFAULT_DATA_SOCKET_SIZE);
-          
+          if (dnConf.getTransferSocketSendBufferSize() > 0) {
+            mirrorSock.setSendBufferSize(
+                dnConf.getTransferSocketSendBufferSize());
+          }
           OutputStream unbufMirrorOut = NetUtils.getOutputStream(mirrorSock,
               writeTimeout);
           InputStream unbufMirrorIn = NetUtils.getInputStream(mirrorSock);
