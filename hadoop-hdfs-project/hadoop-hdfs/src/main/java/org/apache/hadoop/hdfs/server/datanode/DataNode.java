@@ -89,6 +89,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.ObjectName;
+import javax.net.SocketFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -356,6 +357,7 @@ public class DataNode extends ReconfigurableBase
   private static final int NUM_CORES = Runtime.getRuntime()
       .availableProcessors();
   private static final double CONGESTION_RATIO = 1.5;
+  private final SocketFactory socketFactory;
 
   /**
    * Creates a dummy DataNode for testing purpose.
@@ -372,6 +374,7 @@ public class DataNode extends ReconfigurableBase
     this.connectToDnViaHostname = false;
     this.getHdfsBlockLocationsEnabled = false;
     this.pipelineSupportECN = false;
+    this.socketFactory = NetUtils.getDefaultSocketFactory(conf);
   }
 
   /**
@@ -425,6 +428,8 @@ public class DataNode extends ReconfigurableBase
           "File descriptor passing was not configured.";
       LOG.debug(this.fileDescriptorPassingDisabledReason);
     }
+
+    this.socketFactory = NetUtils.getDefaultSocketFactory(conf);
 
     try {
       hostName = getHostName(conf);
@@ -1038,7 +1043,7 @@ public class DataNode extends ReconfigurableBase
   }
 
 
-  
+
   /**
    * Return the BPOfferService instance corresponding to the given block.
    * @return the BPOS
@@ -1460,8 +1465,7 @@ public class DataNode extends ReconfigurableBase
    * Creates either NIO or regular depending on socketWriteTimeout.
    */
   protected Socket newSocket() throws IOException {
-    return (dnConf.socketWriteTimeout > 0) ? 
-           SocketChannel.open().socket() : new Socket();                                   
+    return socketFactory.createSocket();
   }
 
   /**
@@ -2104,9 +2108,10 @@ public class DataNode extends ReconfigurableBase
         }
         sock = newSocket();
         NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
+        sock.setTcpNoDelay(dnConf.getDataTransferServerTcpNoDelay());
         sock.setTcpNoDelay(conf.getBoolean(
-            DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_KEY,
-            DFSConfigKeys.DFS_DATA_TRANSFER_TCPNODELAY_DEFAULT));
+            DFSConfigKeys.DFS_DATA_TRANSFER_SERVER_TCPNODELAY,
+            DFSConfigKeys.DFS_DATA_TRANSFER_SERVER_TCPNODELAY_DEFAULT));
         sock.setSoTimeout(targets.length * dnConf.socketTimeout);
 
         //
