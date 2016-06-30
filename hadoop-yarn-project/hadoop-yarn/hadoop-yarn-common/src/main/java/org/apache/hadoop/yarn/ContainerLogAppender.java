@@ -38,7 +38,7 @@ public class ContainerLogAppender extends FileAppender
   implements Flushable
 {
   private String containerLogDir;
-  private String containerLogFile;
+  private String containerLogFile = "syslog";
   //so that log4j can configure it from the configuration(log4j.properties). 
   private int maxEvents;
   private Queue<LoggingEvent> tail = null;
