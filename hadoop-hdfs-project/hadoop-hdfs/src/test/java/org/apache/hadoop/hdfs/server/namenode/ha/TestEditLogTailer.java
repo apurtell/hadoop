@@ -17,11 +17,12 @@
  */
 package org.apache.hadoop.hdfs.server.namenode.ha;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.logging.impl.Log4JLogger;
 import org.apache.hadoop.conf.Configuration;
@@ -139,6 +140,48 @@ public class TestEditLogTailer {
       .build();
     try {
       cluster.transitionToActive(activeIndex);
+      waitForLogRollInSharedDir(cluster, 3);
+    } finally {
+      cluster.shutdown();
+    }
+  }
+
+  /*
+    1. when all NN become standby nn, standby NN execute to roll log,
+    it will be failed.
+    2. when one NN become active, standby NN roll log success.
+   */
+  @Test
+  public void testTriggersLogRollsForAllStandbyNN() throws Exception {
+    Configuration conf = new Configuration();
+
+    // Roll every 1s
+    conf.setInt(DFSConfigKeys.DFS_HA_LOGROLL_PERIOD_KEY, 1);
+    conf.setInt(DFSConfigKeys.DFS_HA_TAILEDITS_PERIOD_KEY, 1);
+    conf.setInt(DFSConfigKeys.DFS_HA_TAILEDITS_ALL_NAMESNODES_RETRY_KEY, 100);
+
+    // Have to specify IPC ports so the NNs can talk to each other.
+    MiniDFSNNTopology topology = new MiniDFSNNTopology()
+        .addNameservice(new MiniDFSNNTopology.NSConf("ns1")
+          .addNN(new MiniDFSNNTopology.NNConf("nn1").setIpcPort(10031))
+          .addNN(new MiniDFSNNTopology.NNConf("nn2").setIpcPort(10032))
+          .addNN(new MiniDFSNNTopology.NNConf("nn3").setIpcPort(10033)));
+
+    MiniDFSCluster cluster = new MiniDFSCluster.Builder(conf)
+        .nnTopology(topology)
+        .numDataNodes(0)
+        .build();
+    try {
+      cluster.transitionToStandby(0);
+      cluster.transitionToStandby(1);
+      cluster.transitionToStandby(2);
+      try {
+        waitForLogRollInSharedDir(cluster, 3);
+        fail("After all NN become Standby state, Standby NN should roll log, " +
+            "but it will be failed");
+      } catch (TimeoutException ignore) {
+      }
+      cluster.transitionToActive(0);
       waitForLogRollInSharedDir(cluster, 3);
     } finally {
       cluster.shutdown();
