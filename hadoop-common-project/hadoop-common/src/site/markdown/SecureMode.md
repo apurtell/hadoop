@@ -12,10 +12,38 @@
   limitations under the License. See accompanying LICENSE file.
 -->
 
+* [Hadoop in Secure Mode](#Hadoop_in_Secure_Mode)
+    * [Introduction](#Introduction)
+    * [Authentication](#Authentication)
+        * [End User Accounts](#End_User_Accounts)
+        * [User Accounts for Hadoop Daemons](#User_Accounts_for_Hadoop_Daemons)
+        * [Kerberos principals for Hadoop Daemons](#Kerberos_principals_for_Hadoop_Daemons)
+        * [Mapping from Kerberos principals to OS user accounts](#Mapping_from_Kerberos_principals_to_OS_user_accounts)
+        * [Mapping from user to group](#Mapping_from_user_to_group)
+        * [Proxy user](#Proxy_user)
+        * [Secure DataNode](#Secure_DataNode)
+    * [Data confidentiality](#Data_confidentiality)
+        * [Data Encryption on RPC](#Data_Encryption_on_RPC)
+        * [Data Encryption on Block data transfer.](#Data_Encryption_on_Block_data_transfer.)
+        * [Data Encryption on HTTP](#Data_Encryption_on_HTTP)
+    * [Configuration](#Configuration)
+        * [Permissions for both HDFS and local fileSystem paths](#Permissions_for_both_HDFS_and_local_fileSystem_paths)
+        * [Common Configurations](#Common_Configurations)
+        * [NameNode](#NameNode)
+        * [Secondary NameNode](#Secondary_NameNode)
+        * [JournalNode](#JournalNode)
+        * [DataNode](#DataNode)
+        * [WebHDFS](#WebHDFS)
+        * [ResourceManager](#ResourceManager)
+        * [NodeManager](#NodeManager)
+        * [Configuration for WebAppProxy](#Configuration_for_WebAppProxy)
+        * [LinuxContainerExecutor](#LinuxContainerExecutor)
+        * [MapReduce JobHistory Server](#MapReduce_JobHistory_Server)
+    * [Multihoming](#Multihoming)
+    * [References](#References)
+
 Hadoop in Secure Mode
 =====================
-
-<!-- MACRO{toc|fromDepth=0|toDepth=3} -->
 
 Introduction
 ------------
@@ -156,7 +184,7 @@ Custom rules can be tested using the `hadoop kerbname` command.  This command al
 
 ### Mapping from user to group
 
-The system user to system group mapping mechanism can be configured via `hadoop.security.group.mapping`. See [Hadoop Groups Mapping](GroupsMapping.html) for details.
+The system user to system group mapping mechanism can be configured via `hadoop.security.group.mapping`. See [HDFS Permissions Guide](../hadoop-hdfs/HdfsPermissionsGuide.html#Group_Mapping) for details.
 
 Practically you need to manage SSO environment using Kerberos with LDAP for Hadoop in secure mode.
 
@@ -194,13 +222,6 @@ AES offers the greatest cryptographic strength and the best performance. At this
 ### Data Encryption on HTTP
 
 Data transfer between Web-console and clients are protected by using SSL(HTTPS). SSL configuration is recommended but not required to configure Hadoop security with Kerberos.
-
-To enable SSL for web console of HDFS daemons, set `dfs.http.policy` to either `HTTPS_ONLY` or `HTTP_AND_HTTPS` in hdfs-site.xml.
-Note that this does not affect KMS nor HttpFS, as they are implemented on top of Tomcat and do not respect this parameter. See [Hadoop KMS](../../hadoop-kms/index.html) and [Hadoop HDFS over HTTP - Server Setup](../../hadoop-hdfs-httpfs/ServerSetup.html) for instructions on enabling KMS over HTTPS and HttpFS over HTTPS, respectively.
-
-To enable SSL for web console of YARN daemons, set `yarn.http.policy` to `HTTPS_ONLY` in yarn-site.xml.
-
-To enable SSL for web console of MapReduce JobHistory server, set `mapreduce.jobhistory.http.policy` to `HTTPS_ONLY` in mapred-site.xml.
 
 Configuration
 -------------
@@ -256,18 +277,19 @@ The following settings allow configuring SSL access to the NameNode web UI (opti
 | Parameter                    | Value                                           | Notes                                                                                                                                                                                                                                                                                                                                                                                              |
 |:-----------------------------|:------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `dfs.http.policy`            | `HTTP_ONLY` or `HTTPS_ONLY` or `HTTP_AND_HTTPS` | `HTTPS_ONLY` turns off http access. This option takes precedence over the deprecated configuration dfs.https.enable and hadoop.ssl.enabled. If using SASL to authenticate data transfer protocol instead of running DataNode as root and using privileged ports, then this property must be set to `HTTPS_ONLY` to guarantee authentication of HTTP servers. (See `dfs.data.transfer.protection`.) |
-| `dfs.namenode.https-address` | `0.0.0.0:50470`                                 | This parameter is used in non-HA mode and without federation. See [HDFS High Availability](../hadoop-hdfs/HDFSHighAvailabilityWithNFS.html#Deployment) and [HDFS Federation](../hadoop-hdfs/Federation.html#Federation_Configuration) for details.                                                                                                                                                 |
+| `dfs.namenode.https-address` | `nn_host_fqdn:50470`                            |                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `dfs.https.port`             | `50470`                                         |                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `dfs.https.enable`           | `true`                                          | This value is deprecated. `Use dfs.http.policy`                                                                                                                                                                                                                                                                                                                                                    |
 
 ### Secondary NameNode
 
 | Parameter                                                   | Value                                    | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 |:------------------------------------------------------------|:-----------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `dfs.namenode.secondary.http-address`                       | `0.0.0.0:50090`                          | HTTP web UI address for the Secondary NameNode.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `dfs.namenode.secondary.https-address`                      | `0.0.0.0:50091`                          | HTTPS web UI address for the Secondary NameNode.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `dfs.namenode.secondary.http-address`                       | `snn_host_fqdn:50090`                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `dfs.secondary.namenode.keytab.file`                        | `/etc/security/keytab/sn.service.keytab` | Kerberos keytab file for the Secondary NameNode.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `dfs.secondary.namenode.kerberos.principal`                 | `sn/_HOST@REALM.TLD`                     | Kerberos principal name for the Secondary NameNode.                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `dfs.secondary.namenode.kerberos.internal.spnego.principal` | `HTTP/_HOST@REALM.TLD`                   | The server principal used by the Secondary NameNode for web UI SPNEGO authentication. The SPNEGO server principal begins with the prefix `HTTP/` by convention. If the value is `'*'`, the web server will attempt to login with every principal specified in the keytab file `dfs.web.authentication.kerberos.keytab`. For most deployments this can be set to `${dfs.web.authentication.kerberos.principal}` i.e use the value of `dfs.web.authentication.kerberos.principal`. |
+| `dfs.namenode.secondary.https-port`                         | `50470`                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### JournalNode
 
@@ -277,7 +299,6 @@ The following settings allow configuring SSL access to the NameNode web UI (opti
 | `dfs.journalnode.keytab.file`                        | `/etc/security/keytab/jn.service.keytab`     | Kerberos keytab file for the JournalNode.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `dfs.journalnode.kerberos.internal.spnego.principal` | `HTTP/_HOST@REALM.TLD`                       | The server principal used by the JournalNode for web UI SPNEGO authentication when Kerberos security is enabled. The SPNEGO server principal begins with the prefix `HTTP/` by convention. If the value is `'*'`, the web server will attempt to login with every principal specified in the keytab file `dfs.web.authentication.kerberos.keytab`. For most deployments this can be set to `${dfs.web.authentication.kerberos.principal}` i.e use the value of `dfs.web.authentication.kerberos.principal`. |
 | `dfs.web.authentication.kerberos.keytab`             | `/etc/security/keytab/spnego.service.keytab` | SPNEGO keytab file for the JournalNode. In HA clusters this setting is shared with the Name Nodes.                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `dfs.journalnode.https-address`                      | `0.0.0.0:8481`                               | HTTPS web UI address for the JournalNode.                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### DataNode
 
@@ -286,7 +307,7 @@ The following settings allow configuring SSL access to the NameNode web UI (opti
 | `dfs.datanode.data.dir.perm`                     | `700`                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `dfs.datanode.address`                           | `0.0.0.0:1004`                           | Secure DataNode must use privileged port in order to assure that the server was started securely. This means that the server must be started via jsvc. Alternatively, this must be set to a non-privileged port if using SASL to authenticate data transfer protocol. (See `dfs.data.transfer.protection`.)                                                                                                                                                                                                                  |
 | `dfs.datanode.http.address`                      | `0.0.0.0:1006`                           | Secure DataNode must use privileged port in order to assure that the server was started securely. This means that the server must be started via jsvc.                                                                                                                                                                                                                                                                                                                                                                       |
-| `dfs.datanode.https.address`                     | `0.0.0.0:50475`                          | HTTPS web UI address for the Data Node.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `dfs.datanode.https.address`                     | `0.0.0.0:50470`                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `dfs.datanode.kerberos.principal`                | `dn/_HOST@REALM.TLD`                     | Kerberos principal name for the DataNode.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `dfs.datanode.keytab.file`                       | `/etc/security/keytab/dn.service.keytab` | Kerberos keytab file for the DataNode.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `dfs.encrypt.data.transfer`                      | `false`                                  | set to `true` when using data encryption                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -304,11 +325,10 @@ The following settings allow configuring SSL access to the NameNode web UI (opti
 
 ### ResourceManager
 
-| Parameter                                    | Value                                    | Notes                                                                                                                                                                                                                                                                                     |
-|:---------------------------------------------|:-----------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `yarn.resourcemanager.principal`             | `rm/_HOST@REALM.TLD`                     | Kerberos principal name for the ResourceManager.                                                                                                                                                                                                                                          |
-| `yarn.resourcemanager.keytab`                | `/etc/security/keytab/rm.service.keytab` | Kerberos keytab file for the ResourceManager.                                                                                                                                                                                                                                             |
-| `yarn.resourcemanager.webapp.https.address`  | `${yarn.resourcemanager.hostname}:8090`  | The https adddress of the RM web application for non-HA. In HA clusters, use `yarn.resourcemanager.webapp.https.address.`*rm-id* for each ResourceManager. See [ResourceManager High Availability](../../hadoop-yarn/hadoop-yarn-site/ResourceManagerHA.html#Configurations) for details. |
+| Parameter                        | Value                                    | Notes                                            |
+|:---------------------------------|:-----------------------------------------|:-------------------------------------------------|
+| `yarn.resourcemanager.principal` | `rm/_HOST@REALM.TLD`                     | Kerberos principal name for the ResourceManager. |
+| `yarn.resourcemanager.keytab`    | `/etc/security/keytab/rm.service.keytab` | Kerberos keytab file for the ResourceManager.    |
 
 ### NodeManager
 
@@ -319,7 +339,6 @@ The following settings allow configuring SSL access to the NameNode web UI (opti
 | `yarn.nodemanager.container-executor.class`       | `org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor` | Use LinuxContainerExecutor.                             |
 | `yarn.nodemanager.linux-container-executor.group` | `hadoop`                                                           | Unix group of the NodeManager.                          |
 | `yarn.nodemanager.linux-container-executor.path`  | `/path/to/bin/container-executor`                                  | The path to the executable of Linux container executor. |
-| `yarn.nodemanager.webapp.https.address`           | `0.0.0.0:8044`                                                     | The https adddress of the NM web application.           |
 
 ### Configuration for WebAppProxy
 
@@ -391,204 +410,6 @@ Multihoming
 -----------
 
 Multihomed setups where each host has multiple hostnames in DNS (e.g. different hostnames corresponding to public and private network interfaces) may require additional configuration to get Kerberos authentication working. See [HDFS Support for Multihomed Networks](../hadoop-hdfs/HdfsMultihoming.html)
-
-Troubleshooting
----------------
-
-Kerberos is hard to set up —and harder to debug. Common problems are
-
-1. Network and DNS configuration.
-2. Kerberos configuration on hosts (`/etc/krb5.conf`).
-3. Keytab creation and maintenance.
-4. Environment setup: JVM, user login, system clocks, etc.
-
-The fact that the error messages from the JVM are essentially meaningless
-does not aid in diagnosing and fixing such problems.
-
-Extra debugging information can be enabled for the client and for any service
-
-Set the environment variable `HADOOP_JAAS_DEBUG` to `true`.
-
-```bash
-export HADOOP_JAAS_DEBUG=true
-```
-
-Edit the `log4j.properties` file to log Hadoop's security package at `DEBUG` level. 
-
-```
-log4j.logger.org.apache.hadoop.security=DEBUG
-```
-
-Enable JVM-level debugging by setting some system properties.
-
-```
-export HADOOP_OPTS="-Djava.net.preferIPv4Stack=true -Dsun.security.krb5.debug=true -Dsun.security.spnego.debug"
-```
-
-Troubleshooting with `KDiag`
----------------------------
-
-Hadoop has a tool to aid validating setup: `KDiag`
-
-It contains a series of probes for the JVM's configuration and the environment,
-dumps out some system files (`/etc/krb5.conf`, `/etc/ntp.conf`), prints
-out some system state and then attempts to log in to Kerberos as the current user,
-or a specific principal in a named keytab.
- 
-The output of the command can be used for local diagnostics, or forwarded to
-whoever supports the cluster.
-
-The `KDiag` command has its own entry point; it is currently not hooked up
-to the end-user CLI. 
-
-It is invoked simply by passing its full classname to one of the `bin/hadoop`,
-`bin/hdfs` or `bin/yarn` commands. Accordingly, it will display the kerberos client
-state of the command used to invoke it.
-
-```
-hadoop org.apache.hadoop.security.KDiag 
-hdfs org.apache.hadoop.security.KDiag
-yarn org.apache.hadoop.security.KDiag
-```
-
-The command returns a status code of 0 for a successful diagnostics run.
-This does not imply that Kerberos is working —merely that the KDiag command
-did not identify any problem from its limited set of probes. In particular,
-as it does not attempt to connect to any remote service, it does not verify
-that the client is trusted by any service.
-
-If unsuccessful, exit codes are
-
-* -1: the command failed for an unknown reason
-* 41: Unauthorized (== HTTP's 401). KDiag detected a condition which causes
-Kerberos to not work. Examine the output to identify the issue.
-
-### Usage
-
-```
-KDiag: Diagnose Kerberos Problems
-  [-D key=value] : Define a configuration option.
-  [--jaas] : Require a JAAS file to be defined in java.security.auth.login.config.
-  [--keylen <keylen>] : Require a minimum size for encryption keys supported by the JVM. Default value : 256.
-  [--keytab <keytab> --principal <principal>] : Login from a keytab as a specific principal.
-  [--nofail] : Do not fail on the first problem.
-  [--nologin] : Do not attempt to log in.
-  [--out <file>] : Write output to a file.
-  [--resource <resource>] : Load an XML configuration resource.
-  [--secure] : Require the hadoop configuration to be secure.
-```
-
-#### `--jaas`: Require a JAAS file to be defined in `java.security.auth.login.config`.
-
-If `--jaas` is set, the Java system property `java.security.auth.login.config` must be
-set to a JAAS file; this file must exist, be a simple file of non-zero bytes,
-and readable by the current user. More detailed validation is not performed.
-
-JAAS files are not needed by Hadoop itself, but some services (such as Zookeeper)
-do require them for secure operation.
-
-#### `--keylen <length>`: Require a minimum size for encryption keys supported by the JVM".
-
-If the JVM does not support this length, the command will fail.
-
-The default value is to 256, as needed for the `AES256` encryption scheme.
-A JVM without the Java Cryptography Extensions installed does not support
-such a key length. Kerberos will not work unless configured to use
-an encryption scheme with a shorter key length.
-
-#### `--keytab <keytab> --principal <principal>`: Log in from a keytab.
-
-Log in from a keytab as the specific principal.
-
-1. The file must contain the specific principal, including any named host.
-That is, there is no mapping from `_HOST` to the current hostname.
-1. KDiag will log out and attempt to log back in again. This catches
-JVM compatibility problems which have existed in the past. (Hadoop's
-Kerberos support requires use of/introspection into JVM-specific classes).
-
-#### `--nofail` : Do not fail on the first problem
-
-KDiag will make a best-effort attempt to diagnose all Kerberos problems,
-rather than stop at the first one.
-
-This is somewhat limited; checks are made in the order which problems
-surface (e.g keylength is checked first), so an early failure can trigger
-many more problems. But it does produce a more detailed report.
-
-#### `--nologin`: Do not attempt to log in.
-
-Skip trying to log in. This takes precedence over the `--keytab` option,
-and also disables trying to log in to kerberos as the current kinited user.
-
-This is useful when the KDiag command is being invoked within an application,
-as it does not set up Hadoop's static security state —merely check for
-some basic Kerberos preconditions.
-
-#### `--out outfile`: Write output to file.
-
-```
-hadoop org.apache.hadoop.security.KDiag --out out.txt
-```
-
-Much of the diagnostics information comes from the JRE (to `stderr`) and
-from Log4j (to `stdout`).
-To get all the output, it is best to redirect both these output streams
-to the same file, and omit the `--out` option.
-
-```
-hadoop org.apache.hadoop.security.KDiag --keytab zk.service.keytab --principal zookeeper/devix.example.org@REALM > out.txt 2>&1
-```
-
-Even there, the output of the two streams, emitted across multiple threads, can
-be a bit confusing. It will get easier with practise. Looking at the thread
-name in the Log4j output to distinguish background threads from the main thread
-helps at the hadoop level, but doesn't assist in JVM-level logging.
-
-#### `--resource <resource>` : XML configuration resource to load.
-
-When using the `hdfs` and `yarn` commands, it is often useful to force
-load the `hdfs-site.xml` and `yarn-site.xml` resource files, to pick up any Kerberos-related
-configuration options therein.
-The `core-default` and `core-site` XML resources are always loaded.
-
-```
-hdfs org.apache.hadoop.security.KDiag --resource hbase-default.xml --resource hbase-site.xml
-yarn org.apache.hadoop.security.KDiag --resource yarn-default.xml --resource yarn-site.xml
-```
-
-For extra logging during the operation, set the logging and `HADOOP_JAAS_DEBUG` 
-environment variable to the values listed in "Troubleshooting". The JVM 
-options are automatically set in KDiag.
-
-#### `--secure`: Fail if the command is not executed on a secure cluster.
-
-That is: if the authentication mechanism of the cluster is explicitly
-or implicitly set to "simple":
-
-```xml
-<property>
-  <name>hadoop.security.authentication</name>
-  <value>simple</value>
-</property>
-```
-
-Needless to say, an application so configured cannot talk to a secure Hadoop cluster.
-
-### Example
-
-```
-hdfs org.apache.hadoop.security.KDiag \
-  --nofail \
-  --resource hbase-default.xml --resource hbase-site.xml \
-  --keylen 1024 \
-  --keytab zk.service.keytab --principal zookeeper/devix.example.org@REALM
-```
- 
-This attempts to to perform all diagnostics without failing early, load in
-the HDFS and YARN XML resources, require a minimum key length of 1024 bytes,
-and log in as the principal `zookeeper/devix.example.org@REALM`, whose key must be in
-the keytab `zk.service.keytab`
-
 
 References
 ----------
