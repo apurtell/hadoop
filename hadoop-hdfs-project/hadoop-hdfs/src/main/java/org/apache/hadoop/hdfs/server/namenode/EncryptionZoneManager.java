@@ -390,7 +390,7 @@ public class EncryptionZoneManager {
    * @return number of encryption zones.
    */
   public int getNumEncryptionZones() {
-    return encryptionZones.size();
+    return encryptionZones != null ? encryptionZones.size() : 0;
   }
 
   /**
