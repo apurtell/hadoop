@@ -59,7 +59,7 @@ import org.apache.hadoop.contrib.bkjournal.BKJournalProtos.VersionProto;
 import com.google.protobuf.TextFormat;
 import static com.google.common.base.Charsets.UTF_8;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.google.common.annotations.VisibleForTesting;
@@ -418,7 +418,7 @@ public class BookKeeperJournalManager implements JournalManager {
       }
       currentLedger = bkc.createLedger(ensembleSize, quorumSize, ackQuorumSize,
                                        BookKeeper.DigestType.MAC,
-                                       digestpw.getBytes(Charsets.UTF_8));
+                                       digestpw.getBytes(StandardCharsets.UTF_8));
     } catch (BKException bke) {
       throw new IOException("Error creating ledger", bke);
     } catch (KeeperException ke) {
@@ -555,10 +555,10 @@ public class BookKeeperJournalManager implements JournalManager {
           LedgerHandle h;
           if (l.isInProgress()) { // we don't want to fence the current journal
             h = bkc.openLedgerNoRecovery(l.getLedgerId(),
-                BookKeeper.DigestType.MAC, digestpw.getBytes(Charsets.UTF_8));
+                BookKeeper.DigestType.MAC, digestpw.getBytes(StandardCharsets.UTF_8));
           } else {
             h = bkc.openLedger(l.getLedgerId(), BookKeeper.DigestType.MAC,
-                digestpw.getBytes(Charsets.UTF_8));
+                digestpw.getBytes(StandardCharsets.UTF_8));
           }
           elis = new BookKeeperEditLogInputStream(h, l);
           elis.skipTo(fromTxId);
@@ -765,11 +765,11 @@ public class BookKeeperJournalManager implements JournalManager {
       if (fence) {
         lh = bkc.openLedger(l.getLedgerId(),
                             BookKeeper.DigestType.MAC,
-                            digestpw.getBytes(Charsets.UTF_8));
+                            digestpw.getBytes(StandardCharsets.UTF_8));
       } else {
         lh = bkc.openLedgerNoRecovery(l.getLedgerId(),
                                       BookKeeper.DigestType.MAC,
-                                      digestpw.getBytes(Charsets.UTF_8));
+                                      digestpw.getBytes(StandardCharsets.UTF_8));
       }
     } catch (BKException bke) {
       throw new IOException("Exception opening ledger for " + l, bke);

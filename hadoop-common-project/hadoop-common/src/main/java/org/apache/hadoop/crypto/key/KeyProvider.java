@@ -32,7 +32,7 @@ import java.util.Map;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.conf.Configuration;
@@ -209,7 +209,7 @@ public abstract class KeyProvider {
     protected byte[] serialize() throws IOException {
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       JsonWriter writer = new JsonWriter(
-          new OutputStreamWriter(buffer, Charsets.UTF_8));
+          new OutputStreamWriter(buffer, StandardCharsets.UTF_8));
       try {
         writer.beginObject();
         if (cipher != null) {
@@ -253,7 +253,7 @@ public abstract class KeyProvider {
       String description = null;
       Map<String, String> attributes = null;
       JsonReader reader = new JsonReader(new InputStreamReader
-        (new ByteArrayInputStream(bytes), Charsets.UTF_8));
+        (new ByteArrayInputStream(bytes), StandardCharsets.UTF_8));
       try {
         reader.beginObject();
         while (reader.hasNext()) {

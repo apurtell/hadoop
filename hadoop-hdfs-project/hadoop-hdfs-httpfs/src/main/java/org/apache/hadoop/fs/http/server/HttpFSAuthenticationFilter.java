@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.fs.http.server;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.authentication.server.AuthenticationFilter;
@@ -81,7 +81,7 @@ public class HttpFSAuthenticationFilter
     try {
       StringBuilder secret = new StringBuilder();
       Reader reader = new InputStreamReader(new FileInputStream(
-          signatureSecretFile), Charsets.UTF_8);
+          signatureSecretFile), StandardCharsets.UTF_8);
       int c = reader.read();
       while (c > -1) {
         secret.append((char)c);

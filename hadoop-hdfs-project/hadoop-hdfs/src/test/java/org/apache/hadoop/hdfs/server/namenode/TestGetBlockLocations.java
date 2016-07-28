@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.hdfs.server.namenode;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.fs.permission.PermissionStatus;
@@ -123,7 +123,7 @@ public class TestGetBlockLocations {
         "hdfs", "supergroup",
         FsPermission.createImmutable((short) 0x1ff));
     final INodeFile file = new INodeFile(
-        MOCK_INODE_ID, FILE_NAME.getBytes(Charsets.UTF_8),
+        MOCK_INODE_ID, FILE_NAME.getBytes(StandardCharsets.UTF_8),
         perm, 1, 1, new BlockInfoContiguous[] {}, (short) 1,
         DFS_BLOCK_SIZE_DEFAULT);
     fsn.getFSDirectory().addINode(iip, file);

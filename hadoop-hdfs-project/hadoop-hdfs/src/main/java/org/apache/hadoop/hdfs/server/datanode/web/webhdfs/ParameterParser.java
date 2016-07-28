@@ -18,7 +18,7 @@
 package org.apache.hadoop.hdfs.server.datanode.web.webhdfs;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.HAUtil;
@@ -54,7 +54,7 @@ class ParameterParser {
 
   ParameterParser(QueryStringDecoder decoder, Configuration conf) {
     this.path = decodeComponent(decoder.path().substring
-        (WEBHDFS_PREFIX_LENGTH), Charsets.UTF_8);
+        (WEBHDFS_PREFIX_LENGTH), StandardCharsets.UTF_8);
     this.params = decoder.parameters();
     this.conf = conf;
   }

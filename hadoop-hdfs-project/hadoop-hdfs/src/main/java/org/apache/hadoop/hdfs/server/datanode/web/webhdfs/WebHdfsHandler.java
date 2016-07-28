@@ -29,7 +29,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.stream.ChunkedStream;
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -238,7 +238,7 @@ public class WebHdfsHandler extends SimpleChannelInboundHandler<HttpRequest> {
     } finally {
       IOUtils.cleanup(LOG, dfsclient);
     }
-    final byte[] js = JsonUtil.toJsonString(checksum).getBytes(Charsets.UTF_8);
+    final byte[] js = JsonUtil.toJsonString(checksum).getBytes(StandardCharsets.UTF_8);
     DefaultFullHttpResponse resp =
       new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(js));
 
