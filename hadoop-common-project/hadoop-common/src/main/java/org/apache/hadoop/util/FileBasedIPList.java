@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -89,7 +89,7 @@ public class FileBasedIPList implements IPList {
         if (file.exists()) {
           try (
               Reader fileReader = new InputStreamReader(
-                  new FileInputStream(file), Charsets.UTF_8);
+                  new FileInputStream(file), StandardCharsets.UTF_8);
               BufferedReader bufferedReader = new BufferedReader(fileReader)) {
             List<String> lines = new ArrayList<String>();
             String line = null;

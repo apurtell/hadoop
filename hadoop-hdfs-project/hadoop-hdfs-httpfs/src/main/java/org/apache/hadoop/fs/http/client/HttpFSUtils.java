@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.fs.http.client;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.fs.Path;
 import org.json.simple.parser.JSONParser;
@@ -128,7 +128,7 @@ public class HttpFSUtils {
   static Object jsonParse(HttpURLConnection conn) throws IOException {
     try {
       JSONParser parser = new JSONParser();
-      return parser.parse(new InputStreamReader(conn.getInputStream(), Charsets.UTF_8));
+      return parser.parse(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
     } catch (ParseException ex) {
       throw new IOException("JSON parser error, " + ex.getMessage(), ex);
     }

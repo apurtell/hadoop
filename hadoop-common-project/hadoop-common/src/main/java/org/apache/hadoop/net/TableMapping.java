@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -102,7 +102,7 @@ public class TableMapping extends CachedDNSToSwitchMapping {
 
       try (BufferedReader reader =
                new BufferedReader(new InputStreamReader(
-                   new FileInputStream(filename), Charsets.UTF_8))) {
+                   new FileInputStream(filename), StandardCharsets.UTF_8))) {
         String line = reader.readLine();
         while (line != null) {
           line = line.trim();

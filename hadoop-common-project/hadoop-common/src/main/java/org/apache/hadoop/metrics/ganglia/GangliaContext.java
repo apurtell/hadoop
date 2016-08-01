@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -243,7 +243,7 @@ public class GangliaContext extends AbstractMetricsContext {
    * a multiple of 4.
    */
   protected void xdr_string(String s) {
-    byte[] bytes = s.getBytes(Charsets.UTF_8);
+    byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
     int len = bytes.length;
     xdr_int(len);
     System.arraycopy(bytes, 0, buffer, offset, len);

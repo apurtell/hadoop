@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -74,7 +74,7 @@ public class HostsFileReader {
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(
-          new InputStreamReader(fileInputStream, Charsets.UTF_8));
+          new InputStreamReader(fileInputStream, StandardCharsets.UTF_8));
       String line;
       while ((line = reader.readLine()) != null) {
         String[] nodes = line.split("[ \t\n\f\r]+");

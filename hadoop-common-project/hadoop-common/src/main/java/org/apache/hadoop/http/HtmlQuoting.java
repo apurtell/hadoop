@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.http;
 
-import org.apache.commons.io.Charsets;
+import java.nio.charset.StandardCharsets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,11 +27,11 @@ import java.io.OutputStream;
  * This class is responsible for quoting HTML characters.
  */
 public class HtmlQuoting {
-  private static final byte[] ampBytes = "&amp;".getBytes(Charsets.UTF_8);
-  private static final byte[] aposBytes = "&apos;".getBytes(Charsets.UTF_8);
-  private static final byte[] gtBytes = "&gt;".getBytes(Charsets.UTF_8);
-  private static final byte[] ltBytes = "&lt;".getBytes(Charsets.UTF_8);
-  private static final byte[] quotBytes = "&quot;".getBytes(Charsets.UTF_8);
+  private static final byte[] ampBytes = "&amp;".getBytes(StandardCharsets.UTF_8);
+  private static final byte[] aposBytes = "&apos;".getBytes(StandardCharsets.UTF_8);
+  private static final byte[] gtBytes = "&gt;".getBytes(StandardCharsets.UTF_8);
+  private static final byte[] ltBytes = "&lt;".getBytes(StandardCharsets.UTF_8);
+  private static final byte[] quotBytes = "&quot;".getBytes(StandardCharsets.UTF_8);
 
   /**
    * Does the given string need to be quoted?
@@ -65,7 +65,7 @@ public class HtmlQuoting {
     if (str == null) {
       return false;
     }
-    byte[] bytes = str.getBytes(Charsets.UTF_8);
+    byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
     return needsQuoting(bytes, 0 , bytes.length);
   }
 
@@ -100,7 +100,7 @@ public class HtmlQuoting {
     if (item == null) {
       return null;
     }
-    byte[] bytes = item.getBytes(Charsets.UTF_8);
+    byte[] bytes = item.getBytes(StandardCharsets.UTF_8);
     if (needsQuoting(bytes, 0, bytes.length)) {
       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       try {
