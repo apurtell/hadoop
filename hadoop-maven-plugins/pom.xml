@@ -19,14 +19,14 @@
   <parent>
     <groupId>org.apache.hadoop</groupId>
     <artifactId>hadoop-project</artifactId>
-    <version>2.7.2-sfdc-1.0.2-SNAPSHOT</version>
+    <version>2.7.2-sfdc-1.0.2</version>
     <relativePath>../hadoop-project</relativePath>
   </parent>
   <groupId>org.apache.hadoop</groupId>
   <artifactId>hadoop-maven-plugins</artifactId>
   <packaging>maven-plugin</packaging>
   <name>Apache Hadoop Maven Plugins</name>
-  <version>2.7.2-sfdc-1.0.2-SNAPSHOT</version>
+  <version>2.7.2-sfdc-1.0.2</version>
   <properties>
     <maven.dependency.version>3.0</maven.dependency.version>
     <maven.plugin-tools.version>3.4</maven.plugin-tools.version>
