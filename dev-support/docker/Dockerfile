@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     zlib1g-dev pkg-config libssl-dev \
     snappy libsnappy-dev \
     bzip2 libbz2-dev \
+    libzstd1-dev \
     libjansson-dev \
     fuse libfuse-dev \
     libcurl4-openssl-dev \
