@@ -529,6 +529,10 @@
         <snappy.lib></snappy.lib>
         <snappy.include></snappy.include>
         <require.snappy>false</require.snappy>
+        <zstd.prefix></zstd.prefix>
+        <zstd.lib></zstd.lib>
+        <zstd.include></zstd.include>
+        <require.zstd>false</require.zstd>
         <openssl.prefix></openssl.prefix>
         <openssl.lib></openssl.lib>
         <openssl.include></openssl.include>
@@ -583,6 +587,8 @@
                     <javahClassName>org.apache.hadoop.security.JniBasedUnixGroupsNetgroupMapping</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.snappy.SnappyCompressor</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.snappy.SnappyDecompressor</javahClassName>
+                    <javahClassName>org.apache.hadoop.io.compress.zstd.ZStandardCompressor</javahClassName>
+                    <javahClassName>org.apache.hadoop.io.compress.zstd.ZStandardDecompressor</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.lz4.Lz4Compressor</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.lz4.Lz4Decompressor</javahClassName>
                     <javahClassName>org.apache.hadoop.crypto.OpensslCipher</javahClassName>
@@ -607,6 +613,7 @@
                 <configuration>
                   <target>
                     <exec executable="cmake" dir="${project.build.directory}/native" failonerror="true">
+                      <arg line="${basedir}/src/ -DGENERATED_JAVAH=${project.build.directory}/native/javah -DJVM_ARCH_DATA_MODEL=${sun.arch.data.model} -DREQUIRE_BZIP2=${require.bzip2} -DREQUIRE_SNAPPY=${require.snappy} -DCUSTOM_SNAPPY_PREFIX=${snappy.prefix} -DCUSTOM_SNAPPY_LIB=${snappy.lib} -DCUSTOM_SNAPPY_INCLUDE=${snappy.include} -DREQUIRE_ZSTD=${require.zstd} -DCUSTOM_ZSTD_PREFIX=${zstd.prefix} -DCUSTOM_ZSTD_LIB=${zstd.lib} -DCUSTOM_ZSTD_INCLUDE=${zstd.include} -DREQUIRE_OPENSSL=${require.openssl} -DCUSTOM_OPENSSL_PREFIX=${openssl.prefix} -DCUSTOM_OPENSSL_LIB=${openssl.lib} -DCUSTOM_OPENSSL_INCLUDE=${openssl.include} -DEXTRA_LIBHADOOP_RPATH=${extra.libhadoop.rpath}"/>
                       <arg line="${basedir}/src/ -DGENERATED_JAVAH=${project.build.directory}/native/javah -DJVM_ARCH_DATA_MODEL=${sun.arch.data.model} -DREQUIRE_BZIP2=${require.bzip2} -DREQUIRE_SNAPPY=${require.snappy} -DCUSTOM_SNAPPY_PREFIX=${snappy.prefix} -DCUSTOM_SNAPPY_LIB=${snappy.lib} -DCUSTOM_SNAPPY_INCLUDE=${snappy.include} -DREQUIRE_OPENSSL=${require.openssl} -DCUSTOM_OPENSSL_PREFIX=${openssl.prefix} -DCUSTOM_OPENSSL_LIB=${openssl.lib} -DCUSTOM_OPENSSL_INCLUDE=${openssl.include} -DEXTRA_LIBHADOOP_RPATH=${extra.libhadoop.rpath}"/>
                     </exec>
                     <exec executable="make" dir="${project.build.directory}/native" failonerror="true">
@@ -651,6 +658,11 @@
         <snappy.include></snappy.include>
         <require.snappy>false</require.snappy>
         <bundle.snappy.in.bin>true</bundle.snappy.in.bin>
+        <zstd.prefix></zstd.prefix>
+        <zstd.lib></zstd.lib>
+        <zstd.include></zstd.include>
+        <require.ztsd>false</require.ztsd>
+        <bundle.zstd.in.bin>true</bundle.zstd.in.bin>
         <openssl.prefix></openssl.prefix>
         <openssl.lib></openssl.lib>
         <openssl.include></openssl.include>
@@ -700,6 +712,8 @@
                     <javahClassName>org.apache.hadoop.security.JniBasedUnixGroupsNetgroupMapping</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.snappy.SnappyCompressor</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.snappy.SnappyDecompressor</javahClassName>
+                    <javahClassName>org.apache.hadoop.io.compress.zstd.ZStandardCompressor</javahClassName>
+                    <javahClassName>org.apache.hadoop.io.compress.zstd.ZStandardDecompressor</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.lz4.Lz4Compressor</javahClassName>
                     <javahClassName>org.apache.hadoop.io.compress.lz4.Lz4Decompressor</javahClassName>
                     <javahClassName>org.apache.hadoop.crypto.OpensslCipher</javahClassName>
@@ -751,6 +765,10 @@
                     <argument>/p:CustomSnappyLib=${snappy.lib}</argument>
                     <argument>/p:CustomSnappyInclude=${snappy.include}</argument>
                     <argument>/p:RequireSnappy=${require.snappy}</argument>
+                    <argument>/p:CustomZstdPrefix=${zstd.prefix}</argument>
+                    <argument>/p:CustomZstdLib=${zstd.lib}</argument>
+                    <argument>/p:CustomZstdInclude=${zstd.include}</argument>
+                    <argument>/p:RequireZstd=${require.ztsd}</argument>
                     <argument>/p:CustomOpensslPrefix=${openssl.prefix}</argument>
                     <argument>/p:CustomOpensslLib=${openssl.lib}</argument>
                     <argument>/p:CustomOpensslInclude=${openssl.include}</argument>

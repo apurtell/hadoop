@@ -41,6 +41,8 @@
     <hadoop.component>UNDEF</hadoop.component>
     <bundle.snappy>false</bundle.snappy>
     <bundle.snappy.in.bin>false</bundle.snappy.in.bin>
+    <bundle.zstd>false</bundle.zstd>
+    <bundle.zstd.in.bin>false</bundle.zstd.in.bin>
     <bundle.openssl>false</bundle.openssl>
     <bundle.openssl.in.bin>false</bundle.openssl.in.bin>
   </properties>
@@ -352,6 +354,7 @@
                   <target>
                     <!-- Using Unix script to preserve symlinks -->
                     <echo file="${project.build.directory}/dist-copynativelibs.sh">
+                      set -x
                       BUILD_DIR="${project.build.directory}"
                       TAR='tar cf -'
                       UNTAR='tar xfBp -'
